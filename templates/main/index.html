@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- ─── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-6 fade-in-up">
+        <div class="hero-badge">
+          <i class="bi bi-people-fill"></i> Peer-to-Peer Learning
+        </div>
+        <h1>
+          Learn Better,<br>
+          <span style="background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+            Teach Each Other
+          </span>
+        </h1>
+        <p class="lead mt-3">
+          Upload your explanation videos, browse peer-created content, and grow together through collaborative learning — organized by term, level, and unit.
+        </p>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          <a href="{{ url_for('main.browse') }}" class="btn btn-primary-custom btn-lg px-4">
+            <i class="bi bi-play-circle me-2"></i>Browse Videos
+          </a>
+          {% if not current_user.is_authenticated %}
+          <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg px-4">
+            <i class="bi bi-person-plus me-2"></i>Join Free
+          </a>
+          {% else %}
+          <a href="{{ url_for('videos.upload') }}" class="btn btn-accent btn-lg px-4">
+            <i class="bi bi-cloud-upload me-2"></i>Upload Video
+          </a>
+          {% endif %}
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="stat-number" id="totalVideos">—</div>
+            <div class="stat-label">Videos</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="stat-number" id="totalUsers">—</div>
+            <div class="stat-label">Learners</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="stat-number">4</div>
+            <div class="stat-label">Terms</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="stat-number">6</div>
+            <div class="stat-label">Levels</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+        <div class="hero-illustration">
+          <div style="width:420px; height:280px; background: linear-gradient(135deg, rgba(79,70,229,.15), rgba(6,182,212,.1)); border-radius: 20px; border: 1px solid rgba(79,70,229,.3); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+            <i class="bi bi-play-circle-fill" style="font-size:6rem; color:rgba(79,70,229,.5);"></i>
+            <div style="position:absolute; top:16px; left:16px; background:rgba(79,70,229,.2); border-radius:8px; padding:.4rem .8rem; font-size:.75rem; color:var(--primary-light); font-weight:600;">
+              <i class="bi bi-broadcast me-1"></i>LIVE LEARNING
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How It Works ───────────────────────────────────────────────────────── -->
+<section class="py-5" style="background: var(--dark-2);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-heading">How PeerLearn Works</h2>
+      <p class="section-subheading">Three simple steps to start learning and teaching</p>
+      <div class="section-divider mx-auto"></div>
+    </div>
+    <div class="row gy-4">
+      {% for step in [
+        ('1', 'bi-person-plus-fill', 'Create Your Account', 'Sign up for free and join a community of learners who share knowledge through video explanations.', 'var(--primary)'),
+        ('2', 'bi-cloud-upload-fill', 'Upload Your Explanation', 'Record and upload your video explanation, then tag it with the correct term, level, and unit for easy discovery.', 'var(--accent)'),
+        ('3', 'bi-star-fill', 'Learn & Rate', 'Browse videos from your peers, leave comments, and rate the explanations to help the best content rise to the top.', 'var(--success)'),
+      ] %}
+      <div class="col-md-4">
+        <div class="text-center p-4">
+          <div style="width:72px; height:72px; background: linear-gradient(135deg, {{ step[4] }}22, {{ step[4] }}44); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; border: 2px solid {{ step[4] }}44;">
+            <i class="bi {{ step[1] }}" style="font-size:1.75rem; color:{{ step[4] }};"></i>
+          </div>
+          <div style="font-size:.75rem; font-weight:700; color:{{ step[4] }}; text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem;">Step {{ step[0] }}</div>
+          <h5 style="font-weight:700; color:#f1f5f9;">{{ step[2] }}</h5>
+          <p class="text-muted small">{{ step[3] }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ─── Latest Videos ──────────────────────────────────────────────────────── -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex align-items-end justify-content-between mb-4">
+      <div>
+        <h2 class="section-heading mb-1">Latest Videos</h2>
+        <p class="section-subheading mb-0">Fresh explanations from your peers</p>
+        <div class="section-divider mb-0"></div>
+      </div>
+      <a href="{{ url_for('main.browse') }}" class="btn btn-outline-light btn-sm px-3">
+        View All <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    {% if latest %}
+    <div class="row gy-4">
+      {% for video in latest %}
+      <div class="col-sm-6 col-lg-3">
+        <a href="{{ url_for('videos.detail', video_id=video.id) }}" class="text-decoration-none">
+          <div class="card-custom h-100">
+            <div class="video-thumb-wrap">
+              <video src="{{ video.gcs_url }}" preload="none" muted></video>
+              <div class="play-overlay"><i class="bi bi-play-circle-fill"></i></div>
+            </div>
+            <div class="card-body-custom">
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="badge-custom badge-term">{{ video.term }}</span>
+                <span class="badge-custom badge-level">{{ video.level }}</span>
+                <span class="badge-custom badge-unit">{{ video.unit }}</span>
+              </div>
+              <div class="card-title-custom">{{ video.title }}</div>
+              <div class="card-meta d-flex align-items-center justify-content-between mt-2">
+                <span><i class="bi bi-person-circle me-1"></i>{{ video.author.username }}</span>
+                <span class="stars">
+                  {% for i in range(1, 6) %}
+                    {% if i <= video.avg_rating %}&#9733;{% else %}&#9734;{% endif %}
+                  {% endfor %}
+                  <span class="ms-1">{{ video.avg_rating }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-camera-video"></i>
+      <h4>No videos yet</h4>
+      <p>Be the first to upload an explanation video!</p>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom mt-2">Upload Now</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ─── CTA ────────────────────────────────────────────────────────────────── -->
+{% if not current_user.is_authenticated %}
+<section class="py-5" style="background: linear-gradient(135deg, rgba(79,70,229,.15), rgba(6,182,212,.1)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container text-center">
+    <h2 style="font-size:2rem; font-weight:800; color:#f1f5f9;">Ready to Start Learning?</h2>
+    <p class="text-muted mt-2 mb-4">Join thousands of students sharing knowledge through peer video explanations.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary-custom btn-lg px-5 pulse-glow">
+        <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+      </a>
+      <a href="{{ url_for('main.browse') }}" class="btn btn-outline-light btn-lg px-5">
+        <i class="bi bi-eye me-2"></i>Browse First
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Fetch live stats
+  fetch('/api/stats').then(r => r.json()).then(d => {
+    document.getElementById('totalVideos').textContent = d.videos ?? '—';
+    document.getElementById('totalUsers').textContent  = d.users  ?? '—';
+  }).catch(() => {});
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Upload Video{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="section-heading">Upload Your Explanation</h1>
+        <p class="section-subheading">Share your knowledge with your peers through a video explanation</p>
+        <div class="section-divider"></div>
+      </div>
+
+      <!-- Upload Card -->
+      <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem;">
+        <form id="uploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('videos.upload') }}">
+
+          <!-- Drop Zone -->
+          <div class="mb-4">
+            <label class="form-label-custom"><i class="bi bi-camera-video me-1"></i>Video File <span class="text-danger">*</span></label>
+            <div class="upload-zone" id="uploadZone">
+              <i class="bi bi-cloud-arrow-up-fill d-block"></i>
+              <p class="fw-600 text-white mb-1">Drag & drop your video here</p>
+              <p class="small">or click to browse — MP4, WebM, MOV, AVI (max 500 MB)</p>
+            </div>
+            <input type="file" name="video_file" id="video_file" accept="video/*" class="d-none" required>
+          </div>
+
+          <!-- Title -->
+          <div class="mb-3">
+            <label class="form-label-custom" for="title">Video Title <span class="text-danger">*</span></label>
+            <input type="text" name="title" id="title" class="form-control form-control-custom"
+                   placeholder="e.g. How to solve quadratic equations — Unit 5" required maxlength="150">
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label class="form-label-custom" for="description">Description</label>
+            <textarea name="description" id="description" class="form-control form-control-custom"
+                      rows="3" placeholder="Briefly describe what you explain in this video..."></textarea>
+          </div>
+
+          <!-- Classification Row -->
+          <div class="row gy-3 mb-4">
+            <div class="col-md-4">
+              <label class="form-label-custom"><i class="bi bi-calendar3 me-1"></i>Term <span class="text-danger">*</span></label>
+              <select name="term" class="form-select form-select-custom" required>
+                <option value="">Select Term</option>
+                {% for t in terms %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label-custom"><i class="bi bi-bar-chart-steps me-1"></i>Level <span class="text-danger">*</span></label>
+              <select name="level" class="form-select form-select-custom" required>
+                <option value="">Select Level</option>
+                {% for l in levels %}
+                <option value="{{ l }}">{{ l }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label-custom"><i class="bi bi-book me-1"></i>Unit <span class="text-danger">*</span></label>
+              <select name="unit" class="form-select form-select-custom" required>
+                <option value="">Select Unit</option>
+                {% for u in units %}
+                <option value="{{ u }}">{{ u }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Guidelines -->
+          <div style="background: rgba(79,70,229,.08); border: 1px solid rgba(79,70,229,.2); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+            <h6 style="color: var(--primary-light); font-weight: 700; margin-bottom: .5rem;">
+              <i class="bi bi-lightbulb me-2"></i>Upload Guidelines
+            </h6>
+            <ul class="text-muted small mb-0" style="padding-left: 1.25rem;">
+              <li>Keep your explanation clear, concise, and focused on the topic</li>
+              <li>Ensure good audio quality — use a microphone if possible</li>
+              <li>Select the correct term, level, and unit for easy discovery</li>
+              <li>Maximum file size: 500 MB</li>
+            </ul>
+          </div>
+
+          <button type="submit" class="btn btn-primary-custom btn-lg w-100">
+            <i class="bi bi-cloud-upload me-2"></i>Upload Video
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Spinner Overlay -->
+<div class="spinner-overlay" id="spinnerOverlay">
+  <div class="text-center">
+    <div class="spinner-border text-light mb-3" style="width:3rem; height:3rem;" role="status"></div>
+    <p class="text-white fw-600">Uploading your video to the cloud...<br><span class="text-muted small">This may take a few minutes</span></p>
+  </div>
+</div>
+{% endblock %}

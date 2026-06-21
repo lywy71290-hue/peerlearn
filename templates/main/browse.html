@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Browse Videos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Page Header -->
+  <div class="mb-4">
+    <h1 class="section-heading">Browse Videos</h1>
+    <p class="section-subheading">Discover peer explanations — filter by term, level, and unit</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- Filter Bar -->
+  <form id="filterForm" method="GET" action="{{ url_for('main.browse') }}">
+    <div class="filter-bar">
+      <div class="row gy-3 align-items-end">
+        <div class="col-sm-6 col-lg-3">
+          <label class="form-label-custom"><i class="bi bi-calendar3 me-1"></i>Term</label>
+          <select name="term" class="form-select">
+            <option value="">All Terms</option>
+            {% for t in terms %}
+            <option value="{{ t }}" {% if current_term == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <label class="form-label-custom"><i class="bi bi-bar-chart-steps me-1"></i>Level</label>
+          <select name="level" class="form-select">
+            <option value="">All Levels</option>
+            {% for l in levels %}
+            <option value="{{ l }}" {% if current_level == l %}selected{% endif %}>{{ l }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <label class="form-label-custom"><i class="bi bi-book me-1"></i>Unit</label>
+          <select name="unit" class="form-select">
+            <option value="">All Units</option>
+            {% for u in units %}
+            <option value="{{ u }}" {% if current_unit == u %}selected{% endif %}>{{ u }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+          <label class="form-label-custom"><i class="bi bi-sort-down me-1"></i>Sort By</label>
+          <select name="sort" class="form-select">
+            <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+            <option value="top_rated" {% if current_sort == 'top_rated' %}selected{% endif %}>Top Rated</option>
+          </select>
+        </div>
+        <div class="col-lg-1">
+          <button type="submit" class="btn btn-primary-custom w-100">
+            <i class="bi bi-funnel-fill"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Active Filters -->
+  {% if current_term or current_level or current_unit %}
+  <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+    <span class="text-muted small">Active filters:</span>
+    {% if current_term %}
+    <span class="badge-custom badge-term d-flex align-items-center gap-1">
+      {{ current_term }}
+      <a href="{{ url_for('main.browse', level=current_level, unit=current_unit, sort=current_sort) }}" class="text-inherit ms-1" style="color:inherit;">&times;</a>
+    </span>
+    {% endif %}
+    {% if current_level %}
+    <span class="badge-custom badge-level d-flex align-items-center gap-1">
+      {{ current_level }}
+      <a href="{{ url_for('main.browse', term=current_term, unit=current_unit, sort=current_sort) }}" style="color:inherit;">&times;</a>
+    </span>
+    {% endif %}
+    {% if current_unit %}
+    <span class="badge-custom badge-unit d-flex align-items-center gap-1">
+      {{ current_unit }}
+      <a href="{{ url_for('main.browse', term=current_term, level=current_level, sort=current_sort) }}" style="color:inherit;">&times;</a>
+    </span>
+    {% endif %}
+    <a href="{{ url_for('main.browse') }}" class="text-muted small ms-2">Clear all</a>
+  </div>
+  {% endif %}
+
+  <!-- Results Count -->
+  <p class="text-muted small mb-4">
+    Showing <strong class="text-white">{{ pagination.total }}</strong> video{{ 's' if pagination.total != 1 else '' }}
+  </p>
+
+  <!-- Video Grid -->
+  {% if pagination.items %}
+  <div class="row gy-4">
+    {% for video in pagination.items %}
+    <div class="col-sm-6 col-lg-4">
+      <a href="{{ url_for('videos.detail', video_id=video.id) }}" class="text-decoration-none">
+        <div class="card-custom h-100">
+          <div class="video-thumb-wrap">
+            <video src="{{ video.gcs_url }}" preload="none" muted></video>
+            <div class="play-overlay"><i class="bi bi-play-circle-fill"></i></div>
+            <!-- Rating badge -->
+            <div style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,.7); border-radius:6px; padding:.2rem .6rem; font-size:.75rem; color:var(--warning);">
+              &#9733; {{ video.avg_rating }} <span style="color:#94a3b8;">({{ video.rating_count }})</span>
+            </div>
+          </div>
+          <div class="card-body-custom">
+            <div class="d-flex flex-wrap gap-1 mb-2">
+              <span class="badge-custom badge-term">{{ video.term }}</span>
+              <span class="badge-custom badge-level">{{ video.level }}</span>
+              <span class="badge-custom badge-unit">{{ video.unit }}</span>
+            </div>
+            <div class="card-title-custom">{{ video.title }}</div>
+            {% if video.description %}
+            <p class="text-muted small mt-1 mb-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+              {{ video.description }}
+            </p>
+            {% endif %}
+            <div class="card-meta d-flex align-items-center justify-content-between mt-2">
+              <span><i class="bi bi-person-circle me-1"></i>{{ video.author.username }}</span>
+              <span><i class="bi bi-chat me-1"></i>{{ video.comments|length }}</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if pagination.pages > 1 %}
+  <nav class="mt-5 d-flex justify-content-center" aria-label="Page navigation">
+    <ul class="pagination">
+      {% if pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.browse', page=pagination.prev_num, term=current_term, level=current_level, unit=current_unit, sort=current_sort) }}">
+          <i class="bi bi-chevron-left"></i>
+        </a>
+      </li>
+      {% endif %}
+      {% for p in range(1, pagination.pages + 1) %}
+      <li class="page-item {% if p == pagination.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('main.browse', page=p, term=current_term, level=current_level, unit=current_unit, sort=current_sort) }}">{{ p }}</a>
+      </li>
+      {% endfor %}
+      {% if pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('main.browse', page=pagination.next_num, term=current_term, level=current_level, unit=current_unit, sort=current_sort) }}">
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-camera-video-off"></i>
+    <h4>No videos found</h4>
+    <p>Try adjusting your filters or be the first to upload for this category!</p>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom mt-2">
+      <i class="bi bi-cloud-upload me-2"></i>Upload a Video
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Profile Header -->
+  <div style="background: linear-gradient(135deg, rgba(79,70,229,.15), rgba(6,182,212,.08)); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 2rem;">
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      <div style="width:80px; height:80px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; color:#fff; flex-shrink:0;">
+        {{ current_user.username[0].upper() }}
+      </div>
+      <div>
+        <h2 style="font-weight:800; color:#f1f5f9; margin-bottom:.25rem;">{{ current_user.username }}</h2>
+        <p class="text-muted mb-1"><i class="bi bi-envelope me-1"></i>{{ current_user.email }}</p>
+        <p class="text-muted small mb-0"><i class="bi bi-calendar3 me-1"></i>Member since {{ current_user.created_at.strftime('%B %Y') }}</p>
+      </div>
+      <div class="ms-auto d-flex gap-3 flex-wrap">
+        <div class="text-center">
+          <div style="font-size:1.75rem; font-weight:800; background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">{{ videos|length }}</div>
+          <div class="text-muted small">Videos Uploaded</div>
+        </div>
+        <div class="text-center">
+          <div style="font-size:1.75rem; font-weight:800; background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+            {{ current_user.comments|length }}
+          </div>
+          <div class="text-muted small">Comments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload CTA -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h3 class="section-heading mb-1">My Videos</h3>
+      <p class="section-subheading mb-0">Videos you've uploaded to PeerLearn</p>
+    </div>
+    <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom px-4">
+      <i class="bi bi-cloud-upload me-2"></i>Upload New Video
+    </a>
+  </div>
+
+  <!-- Videos Grid -->
+  {% if videos %}
+  <div class="row gy-4">
+    {% for video in videos %}
+    <div class="col-sm-6 col-lg-4">
+      <a href="{{ url_for('videos.detail', video_id=video.id) }}" class="text-decoration-none">
+        <div class="card-custom h-100">
+          <div class="video-thumb-wrap">
+            <video src="{{ video.gcs_url }}" preload="none" muted></video>
+            <div class="play-overlay"><i class="bi bi-play-circle-fill"></i></div>
+            <div style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,.7); border-radius:6px; padding:.2rem .6rem; font-size:.75rem; color:var(--warning);">
+              &#9733; {{ video.avg_rating }}
+            </div>
+          </div>
+          <div class="card-body-custom">
+            <div class="d-flex flex-wrap gap-1 mb-2">
+              <span class="badge-custom badge-term">{{ video.term }}</span>
+              <span class="badge-custom badge-level">{{ video.level }}</span>
+              <span class="badge-custom badge-unit">{{ video.unit }}</span>
+            </div>
+            <div class="card-title-custom">{{ video.title }}</div>
+            <div class="card-meta d-flex align-items-center justify-content-between mt-2">
+              <span><i class="bi bi-chat me-1"></i>{{ video.comments|length }} comments</span>
+              <span><i class="bi bi-star me-1"></i>{{ video.rating_count }} ratings</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-camera-video"></i>
+    <h4>No videos yet</h4>
+    <p>Start sharing your knowledge by uploading your first explanation video!</p>
+    <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom mt-2">
+      <i class="bi bi-cloud-upload me-2"></i>Upload Your First Video
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
