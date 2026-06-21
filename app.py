@@ -1,8 +1,11 @@
 import os
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+
+logging.basicConfig(level=logging.INFO)
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -13,15 +16,16 @@ def create_app():
 
     # ─── Configuration ────────────────────────────────────────────────────────
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-prod")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-        "DATABASE_URL", "postgresql://localhost/peer_learning"
-    )
-    # Render injects postgres:// but SQLAlchemy needs postgresql://
-    if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-        app.config["SQLALCHEMY_DATABASE_URI"] = app.config[
-            "SQLALCHEMY_DATABASE_URI"
-        ].replace("postgres://", "postgresql://", 1)
 
+    database_url = os.environ.get("DATABASE_URL", "")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL environment variable is not set!")
+
+    # Render injects postgres:// but SQLAlchemy needs postgresql://
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB
 
@@ -43,16 +47,15 @@ def create_app():
 
     # ─── Auto-create tables on first run ──────────────────────────────────────
     with app.app_context():
-        # Import all models so SQLAlchemy knows about them
         from models.user import User
         from models.video import Video
         from models.comment import Comment
         from models.rating import Rating
         try:
             db.create_all()
-            print("✅ Database tables created/verified successfully.")
+            app.logger.info("✅ Database tables created/verified successfully.")
         except Exception as e:
-            print(f"⚠️  Database init warning: {e}")
+            app.logger.error(f"❌ Database init error: {e}")
 
     return app
 
