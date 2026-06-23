@@ -21,15 +21,14 @@ def register():
         return redirect(url_for("main.index"))
 
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        email    = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-        confirm  = request.form.get("confirm_password", "")
-        program  = request.form.get("program", "").strip()
-        level    = request.form.get("level", "").strip()
+        username    = request.form.get("username", "").strip()
+        email       = request.form.get("email", "").strip().lower()
+        national_id = request.form.get("national_id", "").strip()
+        program     = request.form.get("program", "").strip()
+        level       = request.form.get("level", "").strip()
 
         # ── Validation ────────────────────────────────────────────────────────
-        if not username or not email or not password:
+        if not username or not email or not national_id:
             flash("جميع الحقول مطلوبة.", "danger")
             return render_template("auth/register.html")
 
@@ -42,12 +41,9 @@ def register():
             )
             return render_template("auth/register.html")
 
-        if password != confirm:
-            flash("كلمتا المرور غير متطابقتين.", "danger")
-            return render_template("auth/register.html")
-
-        if len(password) < 8:
-            flash("يجب أن تكون كلمة المرور 8 أحرف على الأقل.", "danger")
+        # National ID must be 10 digits
+        if not national_id.isdigit() or len(national_id) != 10:
+            flash("رقم الهوية يجب أن يكون 10 أرقام.", "danger")
             return render_template("auth/register.html")
 
         if program not in VALID_PROGRAMS:
@@ -66,13 +62,16 @@ def register():
             flash("هذا الاسم مستخدم بالفعل.", "danger")
             return render_template("auth/register.html")
 
+        # ── Auto-generate password: Niti + national_id ───────────────────────
+        password = "Niti" + national_id
+
         # ── Create user ───────────────────────────────────────────────────────
         user = User(username=username, email=email, program=program, level=level)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
         login_user(user)
-        flash(f"مرحباً {username}! تم إنشاء حسابك بنجاح.", "success")
+        flash(f"مرحباً {username}! تم إنشاء حسابك بنجاح. كلمة مرورك: Niti{national_id}", "success")
         return redirect(url_for("main.index"))
 
     return render_template("auth/register.html")
