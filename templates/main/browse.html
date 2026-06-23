@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}تصفح الفيديوهات{% endblock %}
+{% block title %}تصفح الفيديوهات — NITI Learn{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -50,7 +50,7 @@
           </select>
         </div>
         <div class="col-lg-1">
-          <button type="submit" class="btn btn-primary-custom w-100">
+          <button type="submit" class="btn-gold w-100 justify-content-center">
             <i class="bi bi-funnel-fill"></i>
           </button>
         </div>
@@ -86,7 +86,7 @@
 
   <!-- Results Count -->
   <p class="text-muted small mb-4">
-    عرض <strong style="color:#CC0000;">{{ pagination.total }}</strong> فيديو
+    عرض <strong style="color:var(--gold-dark);">{{ pagination.total }}</strong> فيديو
   </p>
 
   <!-- Video Grid -->

@@ -75,3 +75,18 @@ def api_stats():
         "videos": Video.query.count(),
         "users": User.query.count(),
     })
+
+
+@main_bp.route("/api/latest")
+def api_latest():
+    videos = Video.query.order_by(Video.created_at.desc()).limit(6).all()
+    return jsonify([{
+        "id": v.id,
+        "title": v.title,
+        "url": v.gcs_url,
+        "term": v.term,
+        "level": v.level,
+        "unit": v.unit,
+        "uploader": v.author.username,
+        "rating": round(v.avg_rating, 1),
+    } for v in videos])
