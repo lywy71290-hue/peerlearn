@@ -42,11 +42,13 @@ def create_app():
     from routes.videos import videos_bp
     from routes.main import main_bp
     from routes.admin import admin_bp
+    from routes.notifications import notif_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(videos_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(notif_bp)
 
     # ─── Error Handlers ───────────────────────────────────────────────────────
     @app.errorhandler(403)
@@ -63,6 +65,7 @@ def create_app():
         from models.video import Video
         from models.comment import Comment
         from models.rating import Rating
+        from models.notification import Notification
         try:
             db.create_all()
             app.logger.info("✅ Database tables created/verified successfully.")

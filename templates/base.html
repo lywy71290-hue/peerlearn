@@ -59,6 +59,25 @@
           <i class="bi bi-shield-check"></i> الإدارة
         </a>
         {% endif %}
+
+        <!-- Bell notification icon -->
+        <div class="position-relative d-none d-md-inline-block" id="bellWrapper">
+          <button id="bellBtn" class="nav-bell-btn" title="الإشعارات">
+            <i class="bi bi-bell-fill"></i>
+            <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
+          </button>
+          <!-- Dropdown -->
+          <div id="bellDropdown" class="bell-dropdown" style="display:none;">
+            <div class="bell-dropdown-header">
+              <span>الإشعارات</span>
+              <button id="markAllRead" style="background:none;border:none;color:var(--gold-dark);font-size:.78rem;cursor:pointer;font-weight:700;">تحديد الكل كمقروء</button>
+            </div>
+            <div id="bellList" class="bell-list">
+              <div class="bell-empty"><i class="bi bi-bell-slash"></i><br>لا توجد إشعارات</div>
+            </div>
+          </div>
+        </div>
+
         <a href="{{ url_for('auth.profile') }}" class="nav-btn-outline d-none d-md-inline-flex align-items-center gap-1">
           <i class="bi bi-person-circle"></i> {{ current_user.username }}
         </a>
@@ -182,6 +201,90 @@
     const m = document.getElementById('mobileMenu');
     m.style.display = m.style.display === 'none' ? 'block' : 'none';
   });
+
+  // ── Bell notification system ──────────────────────────────────────────────
+  (function(){
+    const bellBtn = document.getElementById('bellBtn');
+    if(!bellBtn) return; // not logged in
+
+    const bellDropdown = document.getElementById('bellDropdown');
+    const bellBadge    = document.getElementById('bellBadge');
+    const bellList     = document.getElementById('bellList');
+    const markAllBtn   = document.getElementById('markAllRead');
+
+    function loadCount(){
+      fetch('/notifications/count').then(r=>r.json()).then(d=>{
+        if(d.count > 0){
+          bellBadge.textContent = d.count > 99 ? '99+' : d.count;
+          bellBadge.style.display = 'flex';
+        } else {
+          bellBadge.style.display = 'none';
+        }
+      }).catch(()=>{});
+    }
+
+    function loadList(){
+      fetch('/notifications/list').then(r=>r.json()).then(items=>{
+        if(!items.length){
+          bellList.innerHTML = '<div class="bell-empty"><i class="bi bi-bell-slash"></i><br>لا توجد إشعارات</div>';
+          return;
+        }
+        bellList.innerHTML = items.map(n=>`
+          <div class="bell-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}" data-link="${n.link}">
+            <div class="bell-msg">${n.message}</div>
+            <div class="bell-time">${n.created_at}</div>
+          </div>
+        `).join('');
+        // Click on item
+        bellList.querySelectorAll('.bell-item').forEach(el=>{
+          el.addEventListener('click', function(){
+            const id   = this.dataset.id;
+            const link = this.dataset.link;
+            fetch(`/notifications/${id}/read`, {method:'POST'});
+            this.classList.remove('unread');
+            if(link) window.location.href = link;
+          });
+        });
+      }).catch(()=>{});
+    }
+
+    // Toggle dropdown
+    bellBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const open = bellDropdown.style.display !== 'none';
+      bellDropdown.style.display = open ? 'none' : 'block';
+      if(!open){
+        loadList();
+        // Mark all as read after a short delay
+        setTimeout(()=>{
+          fetch('/notifications/mark-read', {method:'POST'}).then(()=>{
+            bellBadge.style.display = 'none';
+          });
+        }, 2000);
+      }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(e){
+      if(!document.getElementById('bellWrapper').contains(e.target)){
+        bellDropdown.style.display = 'none';
+      }
+    });
+
+    // Mark all read button
+    if(markAllBtn){
+      markAllBtn.addEventListener('click', function(){
+        fetch('/notifications/mark-read', {method:'POST'}).then(()=>{
+          bellBadge.style.display = 'none';
+          bellList.querySelectorAll('.bell-item').forEach(el=>el.classList.remove('unread'));
+        });
+      });
+    }
+
+    // Load count on page load and every 30 seconds
+    loadCount();
+    setInterval(loadCount, 30000);
+  })();
 </script>
 {% block scripts %}{% endblock %}
 </body>

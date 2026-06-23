@@ -20,6 +20,9 @@ class Video(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Moderation
+    is_approved = db.Column(db.Boolean, default=False, nullable=False)  # False = pending review
+
     comments = db.relationship(
         "Comment", backref="video", lazy=True, cascade="all, delete-orphan"
     )

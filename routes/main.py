@@ -11,8 +11,7 @@ UNITS = [f"Unit {i}" for i in range(1, 13)]
 
 @main_bp.route("/")
 def index():
-    latest = Video.query.order_by(Video.created_at.desc()).limit(8).all()
-    return render_template("main/index.html", latest=latest, terms=TERMS, levels=LEVELS, units=UNITS)
+    return render_template("main/index.html", terms=TERMS, levels=LEVELS, units=UNITS)
 
 
 @main_bp.route("/browse")
@@ -23,7 +22,8 @@ def browse():
     sort = request.args.get("sort", "newest")
     page = request.args.get("page", 1, type=int)
 
-    query = Video.query
+    # Only show approved videos to regular users
+    query = Video.query.filter_by(is_approved=True)
     if term:
         query = query.filter_by(term=term)
     if level:
@@ -72,14 +72,14 @@ def browse():
 @main_bp.route("/api/stats")
 def api_stats():
     return jsonify({
-        "videos": Video.query.count(),
+        "videos": Video.query.filter_by(is_approved=True).count(),
         "users": User.query.count(),
     })
 
 
 @main_bp.route("/api/latest")
 def api_latest():
-    videos = Video.query.order_by(Video.created_at.desc()).limit(6).all()
+    videos = Video.query.filter_by(is_approved=True).order_by(Video.created_at.desc()).limit(6).all()
     return jsonify([{
         "id": v.id,
         "title": v.title,

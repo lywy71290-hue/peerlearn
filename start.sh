@@ -22,9 +22,23 @@ try:
     cur = conn.cursor()
 
     migrations = [
+        # Users columns
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS program VARCHAR(30) DEFAULT '';",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS level  VARCHAR(30) DEFAULT '';",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE;",
+        # Videos moderation column
+        "ALTER TABLE videos ADD COLUMN IF NOT EXISTS is_approved BOOLEAN NOT NULL DEFAULT FALSE;",
+        # Notifications table
+        """
+        CREATE TABLE IF NOT EXISTS notifications (
+            id         SERIAL PRIMARY KEY,
+            user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            message    VARCHAR(300) NOT NULL,
+            link       VARCHAR(300) DEFAULT '',
+            is_read    BOOLEAN NOT NULL DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
+        """,
     ]
 
     for sql in migrations:
