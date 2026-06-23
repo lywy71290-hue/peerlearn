@@ -147,7 +147,7 @@ a:hover { color: var(--primary-dark); }
 
 /* ─── Hero ──────────────────────────────────────────────────────────────── */
 .hero {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 60%, #3a0000 100%);
+  background: linear-gradient(135deg, #CC0000 0%, #990000 60%, #770000 100%);
   padding: 5rem 0 4rem;
   position: relative;
   overflow: hidden;
