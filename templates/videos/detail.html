@@ -12,7 +12,7 @@
       <div class="video-player-wrap mb-4">
         <video controls preload="metadata" style="width:100%; max-height:520px; display:block;">
           <source src="{{ video.gcs_url }}" type="video/mp4">
-          Your browser does not support the video tag.
+          متصفحك لا يدعم تشغيل الفيديو.
         </video>
       </div>
 
@@ -22,14 +22,14 @@
         <span class="badge-custom badge-level">{{ video.level }}</span>
         <span class="badge-custom badge-unit">{{ video.unit }}</span>
       </div>
-      <h1 style="font-size:1.5rem; font-weight:800; color:#f1f5f9; margin-bottom:.5rem;">{{ video.title }}</h1>
+      <h1 style="font-size:1.5rem; font-weight:800; color:#1a1a1a; margin-bottom:.5rem;">{{ video.title }}</h1>
 
       <!-- Meta Row -->
-      <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="color: var(--muted); font-size:.9rem;">
+      <div class="d-flex flex-wrap align-items-center gap-3 mb-3" style="color:#888; font-size:.9rem;">
         <span><i class="bi bi-person-circle me-1"></i>{{ video.author.username }}</span>
-        <span><i class="bi bi-calendar3 me-1"></i>{{ video.created_at.strftime('%b %d, %Y') }}</span>
-        <span><i class="bi bi-chat me-1"></i>{{ comments|length }} comments</span>
-        <span id="ratingCount"><i class="bi bi-star me-1"></i>({{ video.rating_count }} ratings)</span>
+        <span><i class="bi bi-calendar3 me-1"></i>{{ video.created_at.strftime('%Y/%m/%d') }}</span>
+        <span><i class="bi bi-chat me-1"></i>{{ comments|length }} تعليق</span>
+        <span><i class="bi bi-star me-1"></i>({{ video.rating_count }} تقييم)</span>
       </div>
 
       <!-- Rating Display -->
@@ -39,12 +39,12 @@
             {% if i <= video.avg_rating %}&#9733;{% else %}&#9734;{% endif %}
           {% endfor %}
         </div>
-        <span style="font-size:1.1rem; font-weight:700; color:#f1f5f9;" id="avgRating">{{ video.avg_rating }}</span>
-        <span class="text-muted small" id="ratingCount">({{ video.rating_count }} ratings)</span>
+        <span style="font-size:1.1rem; font-weight:700; color:#1a1a1a;" id="avgRating">{{ video.avg_rating }}</span>
+        <span class="text-muted small" id="ratingCount">({{ video.rating_count }} تقييم)</span>
 
         {% if current_user.is_authenticated %}
         <div class="ms-auto d-flex align-items-center gap-2">
-          <span class="text-muted small">Your rating:</span>
+          <span class="text-muted small">تقييمك:</span>
           <div class="star-rating-input" id="starRatingInput"
                data-video-id="{{ video.id }}"
                data-current-rating="{{ user_rating or 0 }}">
@@ -59,18 +59,18 @@
       <!-- Description -->
       {% if video.description %}
       <div class="video-info-card mb-4">
-        <h6 style="font-weight:700; color:#f1f5f9; margin-bottom:.5rem;"><i class="bi bi-info-circle me-2"></i>Description</h6>
+        <h6 style="font-weight:700; color:#1a1a1a; margin-bottom:.5rem;"><i class="bi bi-info-circle me-2" style="color:#CC0000;"></i>الوصف</h6>
         <p class="text-muted mb-0">{{ video.description }}</p>
       </div>
       {% endif %}
 
-      <!-- Delete Button (owner only) -->
-      {% if current_user.is_authenticated and current_user.id == video.user_id %}
+      <!-- Delete Button (owner or admin only) -->
+      {% if current_user.is_authenticated and (current_user.id == video.user_id or current_user.is_admin) %}
       <div class="mb-4">
         <form method="POST" action="{{ url_for('videos.delete_video', video_id=video.id) }}"
-              onsubmit="return confirm('Are you sure you want to delete this video? This action cannot be undone.')">
+              onsubmit="return confirm('هل أنت متأكد من حذف هذا الفيديو؟ لا يمكن التراجع عن هذا الإجراء.')">
           <button type="submit" class="btn btn-outline-danger btn-sm">
-            <i class="bi bi-trash me-1"></i>Delete Video
+            <i class="bi bi-trash me-1"></i>حذف الفيديو
           </button>
         </form>
       </div>
@@ -78,9 +78,9 @@
 
       <!-- ─── Comments Section ──────────────────────────────────────────── -->
       <div id="commentsSection">
-        <h4 style="font-weight:700; color:#f1f5f9; margin-bottom:1.25rem;">
-          <i class="bi bi-chat-dots me-2"></i>Comments
-          <span style="font-size:1rem; color:var(--muted); font-weight:400;">({{ comments|length }})</span>
+        <h4 style="font-weight:700; color:#1a1a1a; margin-bottom:1.25rem;">
+          <i class="bi bi-chat-dots me-2" style="color:#CC0000;"></i>التعليقات
+          <span style="font-size:1rem; color:#888; font-weight:400;">({{ comments|length }})</span>
         </h4>
 
         {% if current_user.is_authenticated %}
@@ -89,17 +89,17 @@
             <div class="comment-avatar flex-shrink-0">{{ current_user.username[0].upper() }}</div>
             <div class="flex-grow-1">
               <textarea class="form-control form-control-custom" rows="2"
-                        placeholder="Share your thoughts or ask a question..." required></textarea>
+                        placeholder="شارك رأيك أو اطرح سؤالاً..." required></textarea>
               <button type="submit" class="btn btn-primary-custom btn-sm mt-2 px-4">
-                <i class="bi bi-send me-1"></i>Post Comment
+                <i class="bi bi-send me-1"></i>نشر التعليق
               </button>
             </div>
           </div>
         </form>
         {% else %}
-        <div style="background: rgba(79,70,229,.08); border: 1px solid rgba(79,70,229,.2); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; text-align:center;">
-          <p class="text-muted mb-2">Please log in to leave a comment.</p>
-          <a href="{{ url_for('auth.login') }}" class="btn btn-primary-custom btn-sm px-4">Login</a>
+        <div style="background: rgba(204,0,0,.05); border: 1px solid rgba(204,0,0,.15); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; text-align:center;">
+          <p class="text-muted mb-2">سجّل دخولك لترك تعليق.</p>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary-custom btn-sm px-4">تسجيل الدخول</a>
         </div>
         {% endif %}
 
@@ -111,10 +111,10 @@
                 <div class="comment-avatar">{{ comment.author.username[0].upper() }}</div>
                 <div class="flex-grow-1">
                   <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="fw-600 text-white" style="font-weight:600;">{{ comment.author.username }}</span>
-                    <span class="text-muted small">{{ comment.created_at.strftime('%b %d, %Y') }}</span>
+                    <span style="font-weight:600; color:#1a1a1a;">{{ comment.author.username }}</span>
+                    <span class="text-muted small">{{ comment.created_at.strftime('%Y/%m/%d') }}</span>
                   </div>
-                  <p class="mb-0 text-secondary">{{ comment.content }}</p>
+                  <p class="mb-0" style="color:#444;">{{ comment.content }}</p>
                 </div>
               </div>
             </div>
@@ -122,7 +122,7 @@
           {% else %}
           <div class="empty-state py-3" id="noComments">
             <i class="bi bi-chat" style="font-size:2.5rem;"></i>
-            <p class="mt-2">No comments yet. Be the first to comment!</p>
+            <p class="mt-2">لا توجد تعليقات بعد. كن أول من يعلّق!</p>
           </div>
           {% endif %}
         </div>
@@ -133,19 +133,19 @@
     <!-- ─── Right: Related Videos ─────────────────────────────────────────── -->
     <div class="col-lg-4">
       <div style="position: sticky; top: 80px;">
-        <h5 style="font-weight:700; color:#f1f5f9; margin-bottom:1rem;">
-          <i class="bi bi-collection-play me-2"></i>Related Videos
+        <h5 style="font-weight:700; color:#1a1a1a; margin-bottom:1rem;">
+          <i class="bi bi-collection-play me-2" style="color:#CC0000;"></i>فيديوهات ذات صلة
         </h5>
         {% if related %}
           {% for rv in related %}
           <a href="{{ url_for('videos.detail', video_id=rv.id) }}" class="text-decoration-none d-block mb-3">
             <div class="card-custom d-flex" style="flex-direction:row; overflow:hidden; border-radius:10px;">
-              <div style="width:120px; min-width:120px; position:relative; padding-top:0; height:80px; overflow:hidden; background:var(--dark-3);">
+              <div style="width:120px; min-width:120px; position:relative; padding-top:0; height:80px; overflow:hidden; background:#ddd;">
                 <video src="{{ rv.gcs_url }}" preload="none" muted style="width:100%; height:100%; object-fit:cover; position:absolute; inset:0;"></video>
               </div>
               <div style="padding:.6rem .8rem; flex:1; min-width:0;">
-                <div style="font-size:.82rem; font-weight:700; color:#f1f5f9; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ rv.title }}</div>
-                <div style="font-size:.72rem; color:var(--muted); margin-top:.3rem;">
+                <div style="font-size:.82rem; font-weight:700; color:#1a1a1a; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ rv.title }}</div>
+                <div style="font-size:.72rem; color:#888; margin-top:.3rem;">
                   <span class="badge-custom badge-level" style="font-size:.65rem;">{{ rv.level }}</span>
                   <span class="ms-1">{{ rv.author.username }}</span>
                 </div>
@@ -154,11 +154,11 @@
           </a>
           {% endfor %}
         {% else %}
-        <p class="text-muted small">No related videos found.</p>
+        <p class="text-muted small">لا توجد فيديوهات ذات صلة.</p>
         {% endif %}
 
-        <a href="{{ url_for('main.browse', term=video.term, level=video.level) }}" class="btn btn-outline-light btn-sm w-100 mt-2">
-          <i class="bi bi-grid me-1"></i>Browse More in {{ video.level }}
+        <a href="{{ url_for('main.browse', term=video.term, level=video.level) }}" class="btn btn-outline-secondary btn-sm w-100 mt-2">
+          <i class="bi bi-grid me-1"></i>تصفح المزيد في {{ video.level }}
         </a>
       </div>
     </div>

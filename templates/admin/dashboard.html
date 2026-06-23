@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}لوحة الإدارة{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Header -->
+  <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+      <h1 class="section-heading">
+        <i class="bi bi-shield-lock me-2" style="color:#CC0000;"></i>لوحة الإدارة
+      </h1>
+      <p class="section-subheading mb-0">إدارة متدربي NITI والمحتوى المرفوع</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('admin.users') }}" class="btn btn-primary-custom px-4">
+        <i class="bi bi-people me-2"></i>إدارة المتدربين
+      </a>
+      <a href="{{ url_for('admin.videos') }}" class="btn btn-outline-secondary px-4">
+        <i class="bi bi-camera-video me-2"></i>إدارة الفيديوهات
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row gy-4 mb-5">
+    <div class="col-sm-4">
+      <div class="card-custom p-4 text-center" style="border-top: 4px solid #CC0000;">
+        <div style="font-size:2.5rem; font-weight:800; color:#CC0000;">{{ total_users }}</div>
+        <div class="text-muted mt-1"><i class="bi bi-people me-1"></i>إجمالي المتدربين</div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card-custom p-4 text-center" style="border-top: 4px solid #006400;">
+        <div style="font-size:2.5rem; font-weight:800; color:#006400;">{{ total_videos }}</div>
+        <div class="text-muted mt-1"><i class="bi bi-camera-video me-1"></i>إجمالي الفيديوهات</div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card-custom p-4 text-center" style="border-top: 4px solid #0050a0;">
+        <div style="font-size:2.5rem; font-weight:800; color:#0050a0;">{{ total_comments }}</div>
+        <div class="text-muted mt-1"><i class="bi bi-chat me-1"></i>إجمالي التعليقات</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row gy-4">
+
+    <!-- Recent Users -->
+    <div class="col-lg-6">
+      <div class="card-custom p-0 overflow-hidden">
+        <div class="px-4 py-3 d-flex align-items-center justify-content-between"
+             style="background:#f9f9f9; border-bottom:1px solid rgba(0,0,0,.06);">
+          <h5 class="mb-0 fw-700" style="font-weight:700;">
+            <i class="bi bi-person-plus me-2" style="color:#CC0000;"></i>أحدث المتدربين
+          </h5>
+          <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-outline-secondary">عرض الكل</a>
+        </div>
+        <div class="p-3">
+          {% if recent_users %}
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr style="font-size:.82rem; color:#888;">
+                  <th>الاسم</th>
+                  <th>البريد</th>
+                  <th>البرنامج</th>
+                  <th>المستوى</th>
+                  <th>تاريخ التسجيل</th>
+                </tr>
+              </thead>
+              <tbody style="font-size:.85rem;">
+                {% for u in recent_users %}
+                <tr>
+                  <td>
+                    <span class="fw-600" style="font-weight:600;">{{ u.username }}</span>
+                    {% if u.is_admin %}<span class="badge ms-1" style="background:#CC0000; color:#fff; font-size:.65rem;">مشرف</span>{% endif %}
+                  </td>
+                  <td class="text-muted">{{ u.email }}</td>
+                  <td>
+                    {% if u.program == 'academic' %}
+                      <span class="badge-custom badge-term">أكاديمي</span>
+                    {% elif u.program == 'job_skills' %}
+                      <span class="badge-custom badge-unit">مهارات وظيفية</span>
+                    {% else %}—{% endif %}
+                  </td>
+                  <td>
+                    {% if u.level %}
+                      <span class="badge-custom badge-level">{{ u.level }}</span>
+                    {% else %}—{% endif %}
+                  </td>
+                  <td class="text-muted">{{ u.created_at.strftime('%Y/%m/%d') }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted text-center py-3 mb-0">لا يوجد مستخدمون بعد.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Videos -->
+    <div class="col-lg-6">
+      <div class="card-custom p-0 overflow-hidden">
+        <div class="px-4 py-3 d-flex align-items-center justify-content-between"
+             style="background:#f9f9f9; border-bottom:1px solid rgba(0,0,0,.06);">
+          <h5 class="mb-0 fw-700" style="font-weight:700;">
+            <i class="bi bi-camera-video me-2" style="color:#CC0000;"></i>أحدث الفيديوهات
+          </h5>
+          <a href="{{ url_for('admin.videos') }}" class="btn btn-sm btn-outline-secondary">عرض الكل</a>
+        </div>
+        <div class="p-3">
+          {% if recent_videos %}
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr style="font-size:.82rem; color:#888;">
+                  <th>العنوان</th>
+                  <th>الرافع</th>
+                  <th>الترم / المستوى</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody style="font-size:.85rem;">
+                {% for v in recent_videos %}
+                <tr>
+                  <td>
+                    <a href="{{ url_for('videos.detail', video_id=v.id) }}"
+                       style="color:#CC0000; font-weight:600;">{{ v.title[:40] }}{% if v.title|length > 40 %}…{% endif %}</a>
+                  </td>
+                  <td class="text-muted">{{ v.author.username }}</td>
+                  <td>
+                    <span class="badge-custom badge-term" style="font-size:.65rem;">{{ v.term }}</span>
+                    <span class="badge-custom badge-level ms-1" style="font-size:.65rem;">{{ v.level }}</span>
+                  </td>
+                  <td class="text-muted">{{ v.created_at.strftime('%Y/%m/%d') }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted text-center py-3 mb-0">لا توجد فيديوهات بعد.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

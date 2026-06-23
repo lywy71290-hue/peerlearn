@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Upload Video{% endblock %}
+{% block title %}رفع فيديو{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -8,64 +8,64 @@
 
       <!-- Header -->
       <div class="mb-4">
-        <h1 class="section-heading">Upload Your Explanation</h1>
-        <p class="section-subheading">Share your knowledge with your peers through a video explanation</p>
+        <h1 class="section-heading">ارفع شرحك</h1>
+        <p class="section-subheading">شارك معرفتك مع زملائك عبر فيديو شرح</p>
         <div class="section-divider"></div>
       </div>
 
       <!-- Upload Card -->
-      <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem;">
+      <div style="background: #ffffff; border: 1px solid rgba(0,0,0,.08); border-radius: var(--radius-lg); padding: 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.06);">
         <form id="uploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('videos.upload') }}">
 
           <!-- Drop Zone -->
           <div class="mb-4">
-            <label class="form-label-custom"><i class="bi bi-camera-video me-1"></i>Video File <span class="text-danger">*</span></label>
+            <label class="form-label-custom"><i class="bi bi-camera-video me-1"></i>ملف الفيديو <span class="text-danger">*</span></label>
             <div class="upload-zone" id="uploadZone">
               <i class="bi bi-cloud-arrow-up-fill d-block"></i>
-              <p class="fw-600 text-white mb-1">Drag & drop your video here</p>
-              <p class="small">or click to browse — MP4, WebM, MOV, AVI (max 500 MB)</p>
+              <p class="fw-600 mb-1" style="color:#1a1a1a;">اسحب وأفلت الفيديو هنا</p>
+              <p class="small text-muted">أو انقر للتصفح — MP4, WebM, MOV, AVI (الحد الأقصى 500 ميجابايت)</p>
             </div>
             <input type="file" name="video_file" id="video_file" accept="video/*" class="d-none" required>
           </div>
 
           <!-- Title -->
           <div class="mb-3">
-            <label class="form-label-custom" for="title">Video Title <span class="text-danger">*</span></label>
+            <label class="form-label-custom" for="title">عنوان الفيديو <span class="text-danger">*</span></label>
             <input type="text" name="title" id="title" class="form-control form-control-custom"
-                   placeholder="e.g. How to solve quadratic equations — Unit 5" required maxlength="150">
+                   placeholder="مثال: شرح حل المعادلات التربيعية — الوحدة 5" required maxlength="150">
           </div>
 
           <!-- Description -->
           <div class="mb-3">
-            <label class="form-label-custom" for="description">Description</label>
+            <label class="form-label-custom" for="description">الوصف</label>
             <textarea name="description" id="description" class="form-control form-control-custom"
-                      rows="3" placeholder="Briefly describe what you explain in this video..."></textarea>
+                      rows="3" placeholder="اشرح باختصار ما تتناوله في هذا الفيديو..."></textarea>
           </div>
 
           <!-- Classification Row -->
           <div class="row gy-3 mb-4">
             <div class="col-md-4">
-              <label class="form-label-custom"><i class="bi bi-calendar3 me-1"></i>Term <span class="text-danger">*</span></label>
+              <label class="form-label-custom"><i class="bi bi-calendar3 me-1"></i>الترم <span class="text-danger">*</span></label>
               <select name="term" class="form-select form-select-custom" required>
-                <option value="">Select Term</option>
+                <option value="">اختر الترم</option>
                 {% for t in terms %}
                 <option value="{{ t }}">{{ t }}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label-custom"><i class="bi bi-bar-chart-steps me-1"></i>Level <span class="text-danger">*</span></label>
+              <label class="form-label-custom"><i class="bi bi-bar-chart-steps me-1"></i>المستوى <span class="text-danger">*</span></label>
               <select name="level" class="form-select form-select-custom" required>
-                <option value="">Select Level</option>
+                <option value="">اختر المستوى</option>
                 {% for l in levels %}
                 <option value="{{ l }}">{{ l }}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label-custom"><i class="bi bi-book me-1"></i>Unit <span class="text-danger">*</span></label>
+              <label class="form-label-custom"><i class="bi bi-book me-1"></i>الوحدة <span class="text-danger">*</span></label>
               <select name="unit" class="form-select form-select-custom" required>
-                <option value="">Select Unit</option>
+                <option value="">اختر الوحدة</option>
                 {% for u in units %}
                 <option value="{{ u }}">{{ u }}</option>
                 {% endfor %}
@@ -74,20 +74,20 @@
           </div>
 
           <!-- Guidelines -->
-          <div style="background: rgba(79,70,229,.08); border: 1px solid rgba(79,70,229,.2); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
-            <h6 style="color: var(--primary-light); font-weight: 700; margin-bottom: .5rem;">
-              <i class="bi bi-lightbulb me-2"></i>Upload Guidelines
+          <div style="background: rgba(204,0,0,.05); border: 1px solid rgba(204,0,0,.15); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+            <h6 style="color: #CC0000; font-weight: 700; margin-bottom: .5rem;">
+              <i class="bi bi-lightbulb me-2"></i>إرشادات الرفع
             </h6>
             <ul class="text-muted small mb-0" style="padding-left: 1.25rem;">
-              <li>Keep your explanation clear, concise, and focused on the topic</li>
-              <li>Ensure good audio quality — use a microphone if possible</li>
-              <li>Select the correct term, level, and unit for easy discovery</li>
-              <li>Maximum file size: 500 MB</li>
+              <li>اجعل شرحك واضحاً ومركّزاً على الموضوع</li>
+              <li>تأكد من جودة الصوت — استخدم ميكروفوناً إن أمكن</li>
+              <li>اختر الترم والمستوى والوحدة الصحيحة لسهولة الاكتشاف</li>
+              <li>الحد الأقصى لحجم الملف: 500 ميجابايت</li>
             </ul>
           </div>
 
           <button type="submit" class="btn btn-primary-custom btn-lg w-100">
-            <i class="bi bi-cloud-upload me-2"></i>Upload Video
+            <i class="bi bi-cloud-upload me-2"></i>رفع الفيديو
           </button>
         </form>
       </div>
@@ -97,10 +97,11 @@
 </div>
 
 <!-- Spinner Overlay -->
-<div class="spinner-overlay" id="spinnerOverlay">
+<div class="spinner-overlay" id="spinnerOverlay"
+     style="background: rgba(0,0,0,.7);">
   <div class="text-center">
-    <div class="spinner-border text-light mb-3" style="width:3rem; height:3rem;" role="status"></div>
-    <p class="text-white fw-600">Uploading your video to the cloud...<br><span class="text-muted small">This may take a few minutes</span></p>
+    <div class="spinner-border mb-3" style="width:3rem; height:3rem; color:#CC0000;" role="status"></div>
+    <p class="text-white fw-600">جارٍ رفع الفيديو إلى السحابة...<br><span style="color:#ccc; font-size:.85rem;">قد يستغرق ذلك بضع دقائق</span></p>
   </div>
 </div>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}الرئيسية{% endblock %}
 
 {% block content %}
 
@@ -9,56 +9,59 @@
     <div class="row align-items-center gy-5">
       <div class="col-lg-6 fade-in-up">
         <div class="hero-badge">
-          <i class="bi bi-people-fill"></i> Peer-to-Peer Learning
+          <i class="bi bi-people-fill"></i> تعلّم تشاركي بين المتدربين
         </div>
-        <h1>
-          Learn Better,<br>
-          <span style="background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
-            Teach Each Other
+        <h1 style="color:#fff;">
+          تعلّم أفضل،<br>
+          <span style="background: linear-gradient(135deg, #ff4444, #CC0000); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+            علّم بعضكم البعض
           </span>
         </h1>
-        <p class="lead mt-3">
-          Upload your explanation videos, browse peer-created content, and grow together through collaborative learning — organized by term, level, and unit.
+        <p class="lead mt-3" style="color:rgba(255,255,255,.8);">
+          ارفع فيديوهات شرحك، تصفح محتوى زملائك، وانمو معاً من خلال التعلم التشاركي — مُنظَّم حسب الترم والمستوى والوحدة.
         </p>
         <div class="d-flex flex-wrap gap-3 mt-4">
           <a href="{{ url_for('main.browse') }}" class="btn btn-primary-custom btn-lg px-4">
-            <i class="bi bi-play-circle me-2"></i>Browse Videos
+            <i class="bi bi-play-circle me-2"></i>تصفح الفيديوهات
           </a>
           {% if not current_user.is_authenticated %}
           <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg px-4">
-            <i class="bi bi-person-plus me-2"></i>Join Free
+            <i class="bi bi-person-plus me-2"></i>انضم الآن
           </a>
           {% else %}
-          <a href="{{ url_for('videos.upload') }}" class="btn btn-accent btn-lg px-4">
-            <i class="bi bi-cloud-upload me-2"></i>Upload Video
+          <a href="{{ url_for('videos.upload') }}" class="btn btn-outline-light btn-lg px-4">
+            <i class="bi bi-cloud-upload me-2"></i>ارفع فيديو
           </a>
           {% endif %}
         </div>
         <div class="hero-stats">
           <div class="hero-stat-item">
             <div class="stat-number" id="totalVideos">—</div>
-            <div class="stat-label">Videos</div>
+            <div class="stat-label" style="color:rgba(255,255,255,.6);">فيديو</div>
           </div>
           <div class="hero-stat-item">
             <div class="stat-number" id="totalUsers">—</div>
-            <div class="stat-label">Learners</div>
+            <div class="stat-label" style="color:rgba(255,255,255,.6);">متدرب</div>
           </div>
           <div class="hero-stat-item">
             <div class="stat-number">4</div>
-            <div class="stat-label">Terms</div>
+            <div class="stat-label" style="color:rgba(255,255,255,.6);">ترمات</div>
           </div>
           <div class="hero-stat-item">
             <div class="stat-number">6</div>
-            <div class="stat-label">Levels</div>
+            <div class="stat-label" style="color:rgba(255,255,255,.6);">مستويات</div>
           </div>
         </div>
       </div>
       <div class="col-lg-6 d-none d-lg-flex justify-content-center">
         <div class="hero-illustration">
-          <div style="width:420px; height:280px; background: linear-gradient(135deg, rgba(79,70,229,.15), rgba(6,182,212,.1)); border-radius: 20px; border: 1px solid rgba(79,70,229,.3); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
-            <i class="bi bi-play-circle-fill" style="font-size:6rem; color:rgba(79,70,229,.5);"></i>
-            <div style="position:absolute; top:16px; left:16px; background:rgba(79,70,229,.2); border-radius:8px; padding:.4rem .8rem; font-size:.75rem; color:var(--primary-light); font-weight:600;">
-              <i class="bi bi-broadcast me-1"></i>LIVE LEARNING
+          <div style="width:420px; height:280px; background: linear-gradient(135deg, rgba(204,0,0,.15), rgba(204,0,0,.08)); border-radius: 20px; border: 1px solid rgba(204,0,0,.3); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+            <i class="bi bi-play-circle-fill" style="font-size:6rem; color:rgba(204,0,0,.5);"></i>
+            <div style="position:absolute; top:16px; left:16px; background:rgba(204,0,0,.2); border-radius:8px; padding:.4rem .8rem; font-size:.75rem; color:#ff6666; font-weight:600;">
+              <i class="bi bi-broadcast me-1"></i>NITI LEARNING
+            </div>
+            <div style="position:absolute; bottom:16px; right:16px; color:rgba(255,255,255,.3); font-size:.7rem; font-weight:700; letter-spacing:2px;">
+              المعهد الوطني للتدريب والصناعة
             </div>
           </div>
         </div>
@@ -68,26 +71,26 @@
 </section>
 
 <!-- ─── How It Works ───────────────────────────────────────────────────────── -->
-<section class="py-5" style="background: var(--dark-2);">
+<section class="py-5" style="background: #f5f5f5; border-top: 1px solid rgba(0,0,0,.06); border-bottom: 1px solid rgba(0,0,0,.06);">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="section-heading">How PeerLearn Works</h2>
-      <p class="section-subheading">Three simple steps to start learning and teaching</p>
+      <h2 class="section-heading">كيف تعمل المنصة؟</h2>
+      <p class="section-subheading">ثلاث خطوات بسيطة للبدء في التعلم والتعليم</p>
       <div class="section-divider mx-auto"></div>
     </div>
     <div class="row gy-4">
       {% for step in [
-        ('1', 'bi-person-plus-fill', 'Create Your Account', 'Sign up for free and join a community of learners who share knowledge through video explanations.', 'var(--primary)'),
-        ('2', 'bi-cloud-upload-fill', 'Upload Your Explanation', 'Record and upload your video explanation, then tag it with the correct term, level, and unit for easy discovery.', 'var(--accent)'),
-        ('3', 'bi-star-fill', 'Learn & Rate', 'Browse videos from your peers, leave comments, and rate the explanations to help the best content rise to the top.', 'var(--success)'),
+        ('1', 'bi-person-plus-fill', 'أنشئ حسابك', 'سجّل بريدك المؤسسي @niti.edu.sa وانضم إلى مجتمع المتدربين الذين يتشاركون المعرفة عبر الفيديوهات.', '#CC0000'),
+        ('2', 'bi-cloud-upload-fill', 'ارفع شرحك', 'سجّل وارفع فيديو شرحك، ثم صنّفه بالترم والمستوى والوحدة المناسبة ليسهل اكتشافه.', '#CC0000'),
+        ('3', 'bi-star-fill', 'تعلّم وقيّم', 'تصفح فيديوهات زملائك، اترك تعليقاتك، وقيّم الشروحات لمساعدة أفضل المحتوى على الظهور.', '#CC0000'),
       ] %}
       <div class="col-md-4">
         <div class="text-center p-4">
-          <div style="width:72px; height:72px; background: linear-gradient(135deg, {{ step[4] }}22, {{ step[4] }}44); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; border: 2px solid {{ step[4] }}44;">
+          <div style="width:72px; height:72px; background: rgba(204,0,0,.08); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; border: 2px solid rgba(204,0,0,.2);">
             <i class="bi {{ step[1] }}" style="font-size:1.75rem; color:{{ step[4] }};"></i>
           </div>
-          <div style="font-size:.75rem; font-weight:700; color:{{ step[4] }}; text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem;">Step {{ step[0] }}</div>
-          <h5 style="font-weight:700; color:#f1f5f9;">{{ step[2] }}</h5>
+          <div style="font-size:.75rem; font-weight:700; color:{{ step[4] }}; text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem;">الخطوة {{ step[0] }}</div>
+          <h5 style="font-weight:700; color:#1a1a1a;">{{ step[2] }}</h5>
           <p class="text-muted small">{{ step[3] }}</p>
         </div>
       </div>
@@ -101,12 +104,13 @@
   <div class="container">
     <div class="d-flex align-items-end justify-content-between mb-4">
       <div>
-        <h2 class="section-heading mb-1">Latest Videos</h2>
-        <p class="section-subheading mb-0">Fresh explanations from your peers</p>
+        <h2 class="section-heading mb-1">أحدث الفيديوهات</h2>
+        <p class="section-subheading mb-0">شروحات جديدة من زملائك المتدربين</p>
         <div class="section-divider mb-0"></div>
       </div>
-      <a href="{{ url_for('main.browse') }}" class="btn btn-outline-light btn-sm px-3">
-        View All <i class="bi bi-arrow-right ms-1"></i>
+      <a href="{{ url_for('main.browse') }}" class="btn btn-sm px-3"
+         style="background:#CC0000; color:#fff; border:none; border-radius:8px;">
+        عرض الكل <i class="bi bi-arrow-left ms-1"></i>
       </a>
     </div>
 
@@ -145,10 +149,10 @@
     {% else %}
     <div class="empty-state">
       <i class="bi bi-camera-video"></i>
-      <h4>No videos yet</h4>
-      <p>Be the first to upload an explanation video!</p>
+      <h4>لا توجد فيديوهات بعد</h4>
+      <p>كن أول من يرفع فيديو شرح!</p>
       {% if current_user.is_authenticated %}
-      <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom mt-2">Upload Now</a>
+      <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom mt-2">ارفع الآن</a>
       {% endif %}
     </div>
     {% endif %}
@@ -157,16 +161,16 @@
 
 <!-- ─── CTA ────────────────────────────────────────────────────────────────── -->
 {% if not current_user.is_authenticated %}
-<section class="py-5" style="background: linear-gradient(135deg, rgba(79,70,229,.15), rgba(6,182,212,.1)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+<section class="py-5" style="background: linear-gradient(135deg, rgba(204,0,0,.08), rgba(204,0,0,.04)); border-top: 1px solid rgba(204,0,0,.12); border-bottom: 1px solid rgba(204,0,0,.12);">
   <div class="container text-center">
-    <h2 style="font-size:2rem; font-weight:800; color:#f1f5f9;">Ready to Start Learning?</h2>
-    <p class="text-muted mt-2 mb-4">Join thousands of students sharing knowledge through peer video explanations.</p>
+    <h2 style="font-size:2rem; font-weight:800; color:#1a1a1a;">هل أنت مستعد للبدء؟</h2>
+    <p class="text-muted mt-2 mb-4">انضم إلى متدربي NITI وشارك معرفتك عبر فيديوهات الشرح التشاركية.</p>
     <div class="d-flex justify-content-center gap-3 flex-wrap">
       <a href="{{ url_for('auth.register') }}" class="btn btn-primary-custom btn-lg px-5 pulse-glow">
-        <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+        <i class="bi bi-rocket-takeoff me-2"></i>ابدأ الآن
       </a>
-      <a href="{{ url_for('main.browse') }}" class="btn btn-outline-light btn-lg px-5">
-        <i class="bi bi-eye me-2"></i>Browse First
+      <a href="{{ url_for('main.browse') }}" class="btn btn-outline-secondary btn-lg px-5">
+        <i class="bi bi-eye me-2"></i>تصفح أولاً
       </a>
     </div>
   </div>

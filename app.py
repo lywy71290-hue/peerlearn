@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -33,6 +33,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
+    login_manager.login_message = "يرجى تسجيل الدخول للوصول إلى هذه الصفحة."
     login_manager.login_message_category = "info"
     migrate.init_app(app, db)
 
@@ -40,10 +41,21 @@ def create_app():
     from routes.auth import auth_bp
     from routes.videos import videos_bp
     from routes.main import main_bp
+    from routes.admin import admin_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(videos_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(admin_bp)
+
+    # ─── Error Handlers ───────────────────────────────────────────────────────
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template("errors/403.html"), 403
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template("errors/403.html"), 404  # reuse simple template
 
     # ─── Auto-create tables on first run ──────────────────────────────────────
     with app.app_context():
