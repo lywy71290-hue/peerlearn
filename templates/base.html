@@ -17,9 +17,52 @@
   <!-- Main CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/static/manifest.json">
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#0a1628">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NITI Learn">
+  <meta name="application-name" content="NITI Learn">
+  <meta name="msapplication-TileColor" content="#0a1628">
+  <meta name="msapplication-TileImage" content="/static/icons/icon-144x144.png">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/static/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/static/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/static/icons/icon-512x512.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/icon-32x32.png">
+  <link rel="shortcut icon" href="/static/favicon.ico">
+
   {% block head %}{% endblock %}
 </head>
 <body>
+
+<!-- ─── PWA Install Banner ────────────────────────────────────────────── -->
+<div id="pwaInstallBanner" style="display:none; position:fixed; bottom:1rem; left:50%; transform:translateX(-50%);
+     background:#0a1628; color:#fff; border-radius:14px; padding:.75rem 1.25rem;
+     box-shadow:0 8px 32px rgba(0,0,0,.3); z-index:9999; align-items:center; gap:.75rem;
+     max-width:min(92vw,420px); border:1px solid rgba(201,168,76,.3);">
+  <img src="/static/icons/icon-72x72.png" width="36" height="36" style="border-radius:8px;" alt="">
+  <div style="flex:1;">
+    <div style="font-weight:800; font-size:.9rem;">ثبّت NITI Learn</div>
+    <div style="font-size:.78rem; color:rgba(255,255,255,.6);">أضفه لشاشتك الرئيسية</div>
+  </div>
+  <button onclick="installPWA()"
+          style="background:#c9a84c; color:#0a1628; border:none; border-radius:8px;
+                 padding:.4rem .9rem; font-weight:800; font-size:.82rem; cursor:pointer;">
+    تثبيت
+  </button>
+  <button onclick="dismissPWA()"
+          style="background:none; border:none; color:rgba(255,255,255,.5); cursor:pointer; font-size:1.1rem; padding:0 .2rem;">
+    &times;
+  </button>
+</div>
 
 <!-- ─── Navbar ─────────────────────────────────────────────────────────── -->
 <nav class="navbar-custom">
@@ -304,5 +347,50 @@
   })();
 </script>
 {% block scripts %}{% endblock %}
+
+<!-- PWA Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/sw.js')
+        .then(reg => console.log('SW registered:', reg.scope))
+        .catch(err => console.log('SW error:', err));
+    });
+  }
+
+  // PWA Install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install banner if not already installed
+    const banner = document.getElementById('pwaInstallBanner');
+    if (banner) banner.style.display = 'flex';
+  });
+
+  function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) banner.style.display = 'none';
+    });
+  }
+
+  function dismissPWA() {
+    const banner = document.getElementById('pwaInstallBanner');
+    if (banner) banner.style.display = 'none';
+    sessionStorage.setItem('pwaDismissed', '1');
+  }
+
+  // Don't show if dismissed this session
+  if (sessionStorage.getItem('pwaDismissed')) {
+    window.addEventListener('load', () => {
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) banner.style.display = 'none';
+    });
+  }
+</script>
 </body>
 </html>
