@@ -38,17 +38,23 @@ def create_app():
     migrate.init_app(app, db)
 
     # ─── Blueprints ───────────────────────────────────────────────────────────
-    from routes.auth import auth_bp
-    from routes.videos import videos_bp
-    from routes.main import main_bp
-    from routes.admin import admin_bp
+    from routes.auth          import auth_bp
+    from routes.videos        import videos_bp
+    from routes.main          import main_bp
+    from routes.admin         import admin_bp
     from routes.notifications import notif_bp
+    from routes.posts         import posts_bp
+    from routes.chat          import chat_bp
+    from routes.live          import live_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(videos_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(notif_bp)
+    app.register_blueprint(posts_bp)
+    app.register_blueprint(chat_bp)
+    app.register_blueprint(live_bp)
 
     # ─── Error Handlers ───────────────────────────────────────────────────────
     @app.errorhandler(403)
@@ -57,15 +63,17 @@ def create_app():
 
     @app.errorhandler(404)
     def not_found(e):
-        return render_template("errors/403.html"), 404  # reuse simple template
+        return render_template("errors/403.html"), 404
 
     # ─── Auto-create tables on first run ──────────────────────────────────────
     with app.app_context():
-        from models.user import User
-        from models.video import Video
-        from models.comment import Comment
-        from models.rating import Rating
+        from models.user         import User
+        from models.video        import Video
+        from models.comment      import Comment
+        from models.rating       import Rating
         from models.notification import Notification
+        from models.post         import Post, PostComment, PostLike
+        from models.chat         import ChatMessage
         try:
             db.create_all()
             app.logger.info("✅ Database tables created/verified successfully.")

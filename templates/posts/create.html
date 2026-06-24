@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}منشور جديد — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <div class="mb-4">
+        <h1 class="section-heading">منشور جديد</h1>
+        <p class="section-subheading">شارك صورة أو رسماً مع شرح مبسط</p>
+        <div class="section-divider"></div>
+      </div>
+
+      <div style="background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:16px; padding:2rem; box-shadow:0 2px 16px rgba(0,0,0,.06);">
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('posts.create') }}" id="postForm">
+
+          <!-- Image Upload -->
+          <div class="mb-4">
+            <label class="form-label-custom"><i class="bi bi-image me-1"></i>الصورة (اختياري)</label>
+            <div class="upload-zone" id="imageZone" style="min-height:160px;">
+              <i class="bi bi-cloud-arrow-up-fill d-block" style="font-size:2rem; color:var(--gold);"></i>
+              <p class="fw-600 mb-1" style="color:#1a1a1a;">اسحب وأفلت الصورة هنا</p>
+              <p class="small text-muted">أو انقر للتصفح — JPG, PNG, GIF, WebP (الحد الأقصى 10 ميجابايت)</p>
+            </div>
+            <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
+            <!-- Preview -->
+            <div id="imagePreview" style="display:none; margin-top:1rem; text-align:center;">
+              <img id="previewImg" src="" alt="معاينة"
+                   style="max-width:100%; max-height:300px; border-radius:12px; border:2px solid var(--gold);">
+              <button type="button" onclick="clearImage()"
+                      style="display:block; margin:.5rem auto 0; background:none; border:none; color:#e74c3c; font-size:.85rem; cursor:pointer;">
+                <i class="bi bi-x-circle me-1"></i>إزالة الصورة
+              </button>
+            </div>
+          </div>
+
+          <!-- Caption -->
+          <div class="mb-4">
+            <label class="form-label-custom" for="caption">
+              <i class="bi bi-pencil me-1"></i>الشرح <span class="text-danger">*</span>
+            </label>
+            <textarea name="caption" id="caption" class="form-control form-control-custom"
+                      rows="4" placeholder="اكتب شرحاً مبسطاً للصورة أو الفكرة التي تريد مشاركتها..."
+                      required maxlength="1000"></textarea>
+            <small class="text-muted" id="captionCount">0 / 1000</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary-custom btn-lg w-100">
+            <i class="bi bi-send me-2"></i>نشر
+          </button>
+        </form>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{{ url_for('posts.feed') }}" style="color:var(--text-muted); font-size:.85rem;">
+          <i class="bi bi-arrow-right me-1"></i>العودة إلى المنشورات
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Spinner -->
+<div class="spinner-overlay" id="spinnerOverlay" style="background:rgba(0,0,0,.7);">
+  <div class="text-center">
+    <div class="spinner-border mb-3" style="width:3rem;height:3rem;color:var(--gold);" role="status"></div>
+    <p class="text-white fw-600">جارٍ رفع المنشور...</p>
+  </div>
+</div>
+
+<script>
+  const imageZone  = document.getElementById('imageZone');
+  const imageInput = document.getElementById('imageInput');
+  const preview    = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+
+  imageZone.addEventListener('click', () => imageInput.click());
+  ['dragenter','dragover'].forEach(e =>
+    imageZone.addEventListener(e, ev => { ev.preventDefault(); imageZone.classList.add('dragover'); }));
+  ['dragleave','drop'].forEach(e =>
+    imageZone.addEventListener(e, ev => { ev.preventDefault(); imageZone.classList.remove('dragover'); }));
+  imageZone.addEventListener('drop', ev => {
+    const files = ev.dataTransfer.files;
+    if (files.length) { imageInput.files = files; showPreview(files[0]); }
+  });
+  imageInput.addEventListener('change', () => {
+    if (imageInput.files.length) showPreview(imageInput.files[0]);
+  });
+
+  function showPreview(file) {
+    const reader = new FileReader();
+    reader.onload = e => { previewImg.src = e.target.result; preview.style.display = 'block'; imageZone.style.display = 'none'; };
+    reader.readAsDataURL(file);
+  }
+  function clearImage() {
+    imageInput.value = '';
+    preview.style.display = 'none';
+    imageZone.style.display = 'block';
+  }
+
+  // Caption counter
+  const caption = document.getElementById('caption');
+  const counter = document.getElementById('captionCount');
+  caption.addEventListener('input', () => { counter.textContent = caption.value.length + ' / 1000'; });
+
+  // Spinner on submit
+  document.getElementById('postForm').addEventListener('submit', () => {
+    document.getElementById('spinnerOverlay').classList.add('active');
+  });
+</script>
+{% endblock %}

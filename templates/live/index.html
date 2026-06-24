@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}البث المباشر — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h1 class="section-heading mb-1">البث المباشر</h1>
+      <p class="section-subheading mb-0">انضم إلى غرفة أو أنشئ غرفتك الخاصة</p>
+    </div>
+    <button class="btn-gold d-inline-flex align-items-center gap-2" onclick="createRoom()">
+      <i class="bi bi-broadcast"></i> غرفة جديدة
+    </button>
+  </div>
+
+  <!-- Create Room Modal -->
+  <div id="createModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:2rem; width:min(90vw,420px); box-shadow:0 8px 40px rgba(0,0,0,.2);">
+      <h5 style="font-weight:800; color:var(--navy); margin-bottom:1rem;">إنشاء غرفة بث مباشر</h5>
+      <input type="text" id="roomTitle" class="form-control form-control-custom mb-3"
+             placeholder="عنوان الغرفة (مثال: شرح الوحدة 3)" maxlength="80">
+      <div class="d-flex gap-2">
+        <button class="btn-gold flex-grow-1" onclick="submitCreate()">
+          <i class="bi bi-broadcast me-1"></i> ابدأ البث
+        </button>
+        <button class="btn-outline-custom" onclick="closeModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Rooms -->
+  {% if rooms %}
+  <div class="row g-4">
+    {% for room_id, r in rooms.items() %}
+    <div class="col-md-4">
+      <div class="live-room-card">
+        <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+        <div class="live-room-title">{{ r.title }}</div>
+        <div class="live-room-host">
+          <i class="bi bi-person-circle me-1"></i>{{ r.host_name }}
+        </div>
+        <div class="live-room-count">
+          <i class="bi bi-people me-1"></i>{{ r.peers|length }} مشارك
+        </div>
+        <a href="{{ url_for('live.room', room_id=room_id) }}" class="btn-gold w-100 justify-content-center mt-3">
+          <i class="bi bi-camera-video me-1"></i> انضم الآن
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-broadcast" style="font-size:3rem; color:var(--border);"></i>
+    <p class="mt-3" style="color:var(--text-muted);">لا توجد غرف مباشرة الآن. أنشئ غرفتك!</p>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function createRoom() {
+  const modal = document.getElementById('createModal');
+  modal.style.display = 'flex';
+  document.getElementById('roomTitle').focus();
+}
+function closeModal() {
+  document.getElementById('createModal').style.display = 'none';
+}
+function submitCreate() {
+  const title = document.getElementById('roomTitle').value.trim();
+  const form  = new FormData();
+  form.append('title', title);
+  fetch('/live/create', { method: 'POST', body: form })
+    .then(r => r.json())
+    .then(d => {
+      if (d.room_id) window.location.href = '/live/' + d.room_id;
+    });
+}
+document.getElementById('roomTitle')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitCreate();
+});
+</script>
+{% endblock %}

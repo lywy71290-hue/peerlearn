@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}{{ room_name }} — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <!-- Header -->
+      <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <a href="{{ url_for('chat.index') }}" class="btn-outline-custom d-inline-flex align-items-center gap-1" style="padding:.4rem .9rem; font-size:.85rem;">
+          <i class="bi bi-arrow-right"></i> الغرف
+        </a>
+        <div>
+          <h2 style="font-weight:800; color:var(--navy); margin:0; font-size:1.3rem;">{{ room_name }}</h2>
+          <div class="d-flex align-items-center gap-1 mt-1">
+            <span class="live-dot"></span>
+            <span style="font-size:.78rem; color:var(--text-muted);">مباشر</span>
+          </div>
+        </div>
+        <!-- Room switcher -->
+        <div class="d-flex gap-2 me-auto flex-wrap">
+          {% for r_id, r_name in rooms.items() %}
+          <a href="{{ url_for('chat.room', room=r_id) }}"
+             class="chat-room-pill {% if r_id == room %}active{% endif %}">
+            {{ r_name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Chat Box -->
+      <div class="chat-box" id="chatBox">
+        {% for msg in messages %}
+        <div class="chat-msg {% if msg.author.id == current_user.id %}chat-msg-me{% else %}chat-msg-other{% endif %}"
+             data-id="{{ msg.id }}">
+          {% if msg.author.id != current_user.id %}
+          <div class="chat-msg-avatar">{{ msg.author.username[0]|upper }}</div>
+          {% endif %}
+          <div class="chat-msg-bubble">
+            {% if msg.author.id != current_user.id %}
+            <div class="chat-msg-name">{{ msg.author.username }}</div>
+            {% endif %}
+            <div class="chat-msg-text">{{ msg.content }}</div>
+            <div class="chat-msg-time">{{ msg.created_at.strftime('%H:%M') }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5" id="emptyChat" style="color:var(--text-muted);">
+          <i class="bi bi-chat-dots" style="font-size:2.5rem; opacity:.3;"></i>
+          <p class="mt-2 small">لا توجد رسائل بعد. كن أول من يبدأ المحادثة!</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input-bar">
+        <input type="text" id="msgInput" class="chat-input"
+               placeholder="اكتب رسالتك..." maxlength="500"
+               onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); sendMsg(); }">
+        <button class="chat-send-btn" onclick="sendMsg()">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const ROOM      = "{{ room }}";
+  const MY_ID     = {{ current_user.id }};
+  const MY_NAME   = "{{ current_user.username }}";
+  const chatBox   = document.getElementById('chatBox');
+  let   lastId    = {{ messages[-1].id if messages else 0 }};
+
+  function scrollBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+  scrollBottom();
+
+  function appendMsg(msg) {
+    const empty = document.getElementById('emptyChat');
+    if (empty) empty.remove();
+
+    const isMe = msg.username === MY_NAME;
+    const div  = document.createElement('div');
+    div.className = 'chat-msg ' + (isMe ? 'chat-msg-me' : 'chat-msg-other');
+    div.dataset.id = msg.id;
+    div.innerHTML = `
+      ${!isMe ? `<div class="chat-msg-avatar">${msg.username[0].toUpperCase()}</div>` : ''}
+      <div class="chat-msg-bubble">
+        ${!isMe ? `<div class="chat-msg-name">${msg.username}</div>` : ''}
+        <div class="chat-msg-text">${escHtml(msg.content)}</div>
+        <div class="chat-msg-time">${msg.created_at}</div>
+      </div>`;
+    chatBox.appendChild(div);
+    scrollBottom();
+    if (msg.id > lastId) lastId = msg.id;
+  }
+
+  function sendMsg() {
+    const input   = document.getElementById('msgInput');
+    const content = input.value.trim();
+    if (!content) return;
+    input.value = '';
+    fetch(`/chat/${ROOM}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    }).then(r => r.json()).then(msg => {
+      if (!msg.error) appendMsg({ ...msg, id: Date.now() });
+    });
+  }
+
+  // Polling every 2 seconds
+  function poll() {
+    fetch(`/chat/${ROOM}/messages?after=${lastId}`)
+      .then(r => r.json())
+      .then(msgs => {
+        msgs.forEach(m => {
+          if (m.username !== MY_NAME) appendMsg(m);
+          if (m.id > lastId) lastId = m.id;
+        });
+      })
+      .catch(() => {});
+  }
+  setInterval(poll, 2000);
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
+{% endblock %}

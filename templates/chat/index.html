@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}المحادثات — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="mb-4">
+    <h1 class="section-heading">غرف المحادثة</h1>
+    <p class="section-subheading">تواصل مع زملائك المتدربين في الوقت الفعلي</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    {% for room_id, room_name in rooms.items() %}
+    <div class="col-md-4">
+      <a href="{{ url_for('chat.room', room=room_id) }}" class="text-decoration-none">
+        <div class="chat-room-card">
+          <div class="chat-room-icon">
+            {% if room_id == 'general' %}<i class="bi bi-people-fill"></i>
+            {% elif room_id == 'academic' %}<i class="bi bi-mortarboard-fill"></i>
+            {% else %}<i class="bi bi-briefcase-fill"></i>{% endif %}
+          </div>
+          <div class="chat-room-name">{{ room_name }}</div>
+          <div class="chat-room-desc">
+            {% if room_id == 'general' %}نقاشات عامة لجميع المتدربين
+            {% elif room_id == 'academic' %}للمتدربين في البرنامج الأكاديمي
+            {% else %}للمتدربين في برنامج المهارات الوظيفية{% endif %}
+          </div>
+          <div class="chat-room-enter">
+            <i class="bi bi-arrow-left-circle-fill"></i> ادخل الغرفة
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
