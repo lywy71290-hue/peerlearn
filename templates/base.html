@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}NITI Learn{% endblock %}</title>
 
-  <!-- Google Fonts: Tajawal (Arabic) -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Bootstrap 5 RTL -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+  <!-- Bootstrap 5 LTR -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Main CSS -->
@@ -50,13 +50,13 @@
      max-width:min(92vw,420px); border:1px solid rgba(201,168,76,.3);">
   <img src="/static/icons/icon-72x72.png" width="36" height="36" style="border-radius:8px;" alt="">
   <div style="flex:1;">
-    <div style="font-weight:800; font-size:.9rem;">ثبّت NITI Learn</div>
-    <div style="font-size:.78rem; color:rgba(255,255,255,.6);">أضفه لشاشتك الرئيسية</div>
+    <div style="font-weight:800; font-size:.9rem;">Install NITI Learn</div>
+    <div style="font-size:.78rem; color:rgba(255,255,255,.6);">Add it to your home screen</div>
   </div>
   <button onclick="installPWA()"
           style="background:#c9a84c; color:#0a1628; border:none; border-radius:8px;
                  padding:.4rem .9rem; font-weight:800; font-size:.82rem; cursor:pointer;">
-    تثبيت
+    Install
   </button>
   <button onclick="dismissPWA()"
           style="background:none; border:none; color:rgba(255,255,255,.5); cursor:pointer; font-size:1.1rem; padding:0 .2rem;">
@@ -80,28 +80,28 @@
     <div class="d-none d-md-flex align-items-center gap-1">
       <a href="{{ url_for('main.index') }}"
          class="nav-link-custom {% if request.endpoint == 'main.index' %}active{% endif %}">
-        <i class="bi bi-house me-1"></i>الرئيسية
+        <i class="bi bi-house me-1"></i>Home
       </a>
       <a href="{{ url_for('main.browse') }}"
          class="nav-link-custom {% if request.endpoint == 'main.browse' %}active{% endif %}">
-        <i class="bi bi-grid me-1"></i>تصفح الفيديوهات
+        <i class="bi bi-grid me-1"></i>Browse Videos
       </a>
       {% if current_user.is_authenticated %}
       <a href="{{ url_for('posts.feed') }}"
          class="nav-link-custom {% if 'posts.' in request.endpoint %}active{% endif %}">
-        <i class="bi bi-images me-1"></i>المنشورات
+        <i class="bi bi-images me-1"></i>Posts
       </a>
       <a href="{{ url_for('chat.index') }}"
          class="nav-link-custom {% if 'chat.' in request.endpoint %}active{% endif %}">
-        <i class="bi bi-chat-dots me-1"></i>المحادثات
+        <i class="bi bi-chat-dots me-1"></i>Chat
       </a>
       <a href="{{ url_for('live.index') }}"
          class="nav-link-custom {% if 'live.' in request.endpoint %}active{% endif %}">
-        <i class="bi bi-broadcast me-1"></i>مباشر
+        <i class="bi bi-broadcast me-1"></i>Live
       </a>
       <a href="{{ url_for('videos.upload') }}"
          class="nav-link-custom {% if request.endpoint == 'videos.upload' %}active{% endif %}">
-        <i class="bi bi-cloud-upload me-1"></i>رفع فيديو
+        <i class="bi bi-cloud-upload me-1"></i>Upload
       </a>
       {% endif %}
     </div>
@@ -111,24 +111,24 @@
       {% if current_user.is_authenticated %}
         {% if current_user.is_admin %}
         <a href="{{ url_for('admin.dashboard') }}" class="nav-btn-outline d-none d-md-inline-flex align-items-center gap-1">
-          <i class="bi bi-shield-check"></i> الإدارة
+          <i class="bi bi-shield-check"></i> Admin
         </a>
         {% endif %}
 
         <!-- Bell notification icon -->
         <div class="position-relative d-none d-md-inline-block" id="bellWrapper">
-          <button id="bellBtn" class="nav-bell-btn" title="الإشعارات">
+          <button id="bellBtn" class="nav-bell-btn" title="Notifications">
             <i class="bi bi-bell-fill"></i>
             <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
           </button>
           <!-- Dropdown -->
           <div id="bellDropdown" class="bell-dropdown" style="display:none;">
             <div class="bell-dropdown-header">
-              <span>الإشعارات</span>
-              <button id="markAllRead" style="background:none;border:none;color:var(--gold-dark);font-size:.78rem;cursor:pointer;font-weight:700;">تحديد الكل كمقروء</button>
+              <span>Notifications</span>
+              <button id="markAllRead" style="background:none;border:none;color:var(--gold-dark);font-size:.78rem;cursor:pointer;font-weight:700;">Mark all as read</button>
             </div>
             <div id="bellList" class="bell-list">
-              <div class="bell-empty"><i class="bi bi-bell-slash"></i><br>لا توجد إشعارات</div>
+              <div class="bell-empty"><i class="bi bi-bell-slash"></i><br>No notifications</div>
             </div>
           </div>
         </div>
@@ -137,14 +137,14 @@
           <i class="bi bi-person-circle"></i> {{ current_user.username }}
         </a>
         <a href="{{ url_for('auth.logout') }}" class="nav-btn-gold d-none d-md-inline-flex align-items-center gap-1">
-          <i class="bi bi-box-arrow-right"></i> خروج
+          <i class="bi bi-box-arrow-right"></i> Logout
         </a>
       {% else %}
         <a href="{{ url_for('auth.login') }}" class="nav-btn-outline d-none d-md-inline-flex align-items-center gap-1">
-          <i class="bi bi-box-arrow-in-right"></i> دخول
+          <i class="bi bi-box-arrow-in-right"></i> Login
         </a>
         <a href="{{ url_for('auth.register') }}" class="nav-btn-gold d-none d-md-inline-flex align-items-center gap-1">
-          <i class="bi bi-person-plus"></i> تسجيل
+          <i class="bi bi-person-plus"></i> Register
         </a>
       {% endif %}
 
@@ -159,27 +159,27 @@
   <!-- Mobile menu -->
   <div id="mobileMenu" style="display:none; border-top:1px solid rgba(255,255,255,.1); margin-top:.5rem;">
     <div class="container py-2 d-flex flex-column gap-1">
-      <a href="{{ url_for('main.index') }}" class="nav-link-custom">الرئيسية</a>
-      <a href="{{ url_for('main.browse') }}" class="nav-link-custom">تصفح الفيديوهات</a>
+      <a href="{{ url_for('main.index') }}" class="nav-link-custom">Home</a>
+      <a href="{{ url_for('main.browse') }}" class="nav-link-custom">Browse Videos</a>
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('videos.upload') }}" class="nav-link-custom">رفع فيديو</a>
-        <a href="{{ url_for('posts.feed') }}" class="nav-link-custom">المنشورات</a>
-        <a href="{{ url_for('chat.index') }}" class="nav-link-custom">المحادثات</a>
-        <a href="{{ url_for('live.index') }}" class="nav-link-custom">البث المباشر</a>
-        <a href="{{ url_for('auth.profile') }}" class="nav-link-custom">ملفي الشخصي</a>
+        <a href="{{ url_for('videos.upload') }}" class="nav-link-custom">Upload Video</a>
+        <a href="{{ url_for('posts.feed') }}" class="nav-link-custom">Posts</a>
+        <a href="{{ url_for('chat.index') }}" class="nav-link-custom">Chat</a>
+        <a href="{{ url_for('live.index') }}" class="nav-link-custom">Live</a>
+        <a href="{{ url_for('auth.profile') }}" class="nav-link-custom">My Profile</a>
         {% if current_user.is_admin %}
-        <a href="{{ url_for('admin.dashboard') }}" class="nav-link-custom">لوحة الإدارة</a>
+        <a href="{{ url_for('admin.dashboard') }}" class="nav-link-custom">Admin Panel</a>
         {% endif %}
-        <a href="{{ url_for('auth.logout') }}" class="nav-link-custom">تسجيل الخروج</a>
+        <a href="{{ url_for('auth.logout') }}" class="nav-link-custom">Logout</a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}" class="nav-link-custom">تسجيل الدخول</a>
-        <a href="{{ url_for('auth.register') }}" class="nav-link-custom">إنشاء حساب</a>
+        <a href="{{ url_for('auth.login') }}" class="nav-link-custom">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="nav-link-custom">Create Account</a>
       {% endif %}
     </div>
   </div>
 </nav>
 
-<!-- ─── Flash messages (non-landing pages) ────────────────────────────── -->
+<!-- ─── Flash messages ─────────────────────────────────────────────────── -->
 {% if request.endpoint != 'main.index' %}
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -209,45 +209,45 @@
           <span>NITI</span> Learn
         </div>
         <p style="color:rgba(255,255,255,.5); font-size:.82rem; line-height:1.7; margin-top:.5rem;">
-          منصة تعليمية تشاركية تتيح لمتدربي المعهد الوطني للتدريب والصناعة مشاركة المعرفة عبر فيديوهات الشرح.
+          A collaborative learning platform for NITI trainees to share knowledge through explanation videos and educational content.
         </p>
         <div style="color:var(--gold); font-size:.78rem; margin-top:.75rem; font-weight:600;">
-          <i class="bi bi-geo-alt me-1"></i>المعهد الوطني للتدريب والصناعة
+          <i class="bi bi-geo-alt me-1"></i>National Industrial Training Institute
         </div>
       </div>
       <div class="col-6 col-md-2">
-        <div style="font-weight:700; color:var(--white); margin-bottom:.75rem; font-size:.88rem;">المنصة</div>
+        <div style="font-weight:700; color:var(--white); margin-bottom:.75rem; font-size:.88rem;">Platform</div>
         <div class="d-flex flex-column gap-2" style="font-size:.83rem;">
-          <a href="{{ url_for('main.index') }}">الرئيسية</a>
-          <a href="{{ url_for('main.browse') }}">تصفح الفيديوهات</a>
+          <a href="{{ url_for('main.index') }}">Home</a>
+          <a href="{{ url_for('main.browse') }}">Browse Videos</a>
           {% if current_user.is_authenticated %}
-          <a href="{{ url_for('videos.upload') }}">رفع فيديو</a>
+          <a href="{{ url_for('videos.upload') }}">Upload Video</a>
           {% endif %}
         </div>
       </div>
       <div class="col-6 col-md-2">
-        <div style="font-weight:700; color:var(--white); margin-bottom:.75rem; font-size:.88rem;">الحساب</div>
+        <div style="font-weight:700; color:var(--white); margin-bottom:.75rem; font-size:.88rem;">Account</div>
         <div class="d-flex flex-column gap-2" style="font-size:.83rem;">
           {% if current_user.is_authenticated %}
-          <a href="{{ url_for('auth.profile') }}">ملفي الشخصي</a>
-          <a href="{{ url_for('auth.logout') }}">تسجيل الخروج</a>
+          <a href="{{ url_for('auth.profile') }}">My Profile</a>
+          <a href="{{ url_for('auth.logout') }}">Logout</a>
           {% else %}
-          <a href="{{ url_for('auth.login') }}">تسجيل الدخول</a>
-          <a href="{{ url_for('auth.register') }}">إنشاء حساب</a>
+          <a href="{{ url_for('auth.login') }}">Login</a>
+          <a href="{{ url_for('auth.register') }}">Create Account</a>
           {% endif %}
         </div>
       </div>
       <div class="col-md-4">
-        <div style="font-weight:700; color:var(--white); margin-bottom:.75rem; font-size:.88rem;">عن المنصة</div>
+        <div style="font-weight:700; color:var(--white); margin-bottom:.75rem; font-size:.88rem;">About</div>
         <p style="color:rgba(255,255,255,.5); font-size:.82rem; line-height:1.7; margin:0;">
-          تمكّن المتدربين من مشاركة المعرفة وتقييم محتوى الزملاء والنمو معاً في بيئة تعليمية تشاركية.
+          Empowering trainees to share knowledge, rate peers' content, and grow together in a collaborative learning environment.
         </p>
       </div>
     </div>
     <hr class="footer-divider">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2" style="font-size:.78rem; color:rgba(255,255,255,.4);">
-      <span>© 2025 NITI Learn. جميع الحقوق محفوظة.</span>
-      <span>مدعوم بـ Flask &amp; Cloudinary</span>
+      <span>© 2025 NITI Learn. All rights reserved.</span>
+      <span>Powered by Flask &amp; Cloudinary</span>
     </div>
   </div>
 </footer>
@@ -265,7 +265,7 @@
   // ── Bell notification system ──────────────────────────────────────────────
   (function(){
     const bellBtn = document.getElementById('bellBtn');
-    if(!bellBtn) return; // not logged in
+    if(!bellBtn) return;
 
     const bellDropdown = document.getElementById('bellDropdown');
     const bellBadge    = document.getElementById('bellBadge');
@@ -286,7 +286,7 @@
     function loadList(){
       fetch('/notifications/list').then(r=>r.json()).then(items=>{
         if(!items.length){
-          bellList.innerHTML = '<div class="bell-empty"><i class="bi bi-bell-slash"></i><br>لا توجد إشعارات</div>';
+          bellList.innerHTML = '<div class="bell-empty"><i class="bi bi-bell-slash"></i><br>No notifications</div>';
           return;
         }
         bellList.innerHTML = items.map(n=>`
@@ -295,14 +295,13 @@
             <div class="bell-time">${n.created_at}</div>
           </div>
         `).join('');
-        // Click on item
         bellList.querySelectorAll('.bell-item').forEach(el=>{
           el.addEventListener('click', function(){
             const id   = this.dataset.id;
             const link = this.dataset.link;
             fetch(`/notifications/${id}/read`, {method:'POST'});
             this.classList.remove('unread');
-            if(link) window.location.href = link;
+            if(link && link !== 'None') window.location.href = link;
           });
         });
       }).catch(()=>{});
@@ -311,27 +310,17 @@
     // Toggle dropdown
     bellBtn.addEventListener('click', function(e){
       e.stopPropagation();
-      const open = bellDropdown.style.display !== 'none';
+      const open = bellDropdown.style.display === 'block';
       bellDropdown.style.display = open ? 'none' : 'block';
-      if(!open){
-        loadList();
-        // Mark all as read after a short delay
-        setTimeout(()=>{
-          fetch('/notifications/mark-read', {method:'POST'}).then(()=>{
-            bellBadge.style.display = 'none';
-          });
-        }, 2000);
-      }
+      if(!open) loadList();
     });
 
-    // Close on outside click
-    document.addEventListener('click', function(e){
-      if(!document.getElementById('bellWrapper').contains(e.target)){
-        bellDropdown.style.display = 'none';
-      }
+    document.addEventListener('click', function(){
+      bellDropdown.style.display = 'none';
     });
 
-    // Mark all read button
+    bellDropdown.addEventListener('click', e => e.stopPropagation());
+
     if(markAllBtn){
       markAllBtn.addEventListener('click', function(){
         fetch('/notifications/mark-read', {method:'POST'}).then(()=>{
@@ -341,7 +330,6 @@
       });
     }
 
-    // Load count on page load and every 30 seconds
     loadCount();
     setInterval(loadCount, 30000);
   })();
@@ -358,12 +346,10 @@
     });
   }
 
-  // PWA Install prompt
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // Show install banner if not already installed
     const banner = document.getElementById('pwaInstallBanner');
     if (banner) banner.style.display = 'flex';
   });
@@ -384,7 +370,6 @@
     sessionStorage.setItem('pwaDismissed', '1');
   }
 
-  // Don't show if dismissed this session
   if (sessionStorage.getItem('pwaDismissed')) {
     window.addEventListener('load', () => {
       const banner = document.getElementById('pwaInstallBanner');

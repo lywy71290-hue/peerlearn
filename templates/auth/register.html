@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}إنشاء حساب — NITI Learn{% endblock %}
+{% block title %}Create Account — NITI Learn{% endblock %}
 
 {% block content %}
 <div class="auth-page">
@@ -13,7 +13,7 @@
               <i class="bi bi-mortarboard-fill"></i>
             </div>
             <h4 style="font-weight:800; color:var(--navy); margin-bottom:.25rem;">NITI Learn</h4>
-            <p style="color:var(--text-muted); font-size:.85rem; margin:0;">أنشئ حسابك وابدأ رحلة التعلم التشاركي</p>
+            <p style="color:var(--text-muted); font-size:.85rem; margin:0;">Create your account and start your learning journey</p>
           </div>
 
           {% with messages = get_flashed_messages(with_categories=true) %}
@@ -30,9 +30,9 @@
                style="background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.3);">
             <i class="bi bi-info-circle-fill" style="color:var(--gold-dark); font-size:1.1rem; margin-top:.1rem;"></i>
             <small style="color:var(--text-mid); line-height:1.6;">
-              التسجيل مقتصر على البريد المؤسسي <strong style="color:var(--navy);">@niti.edu.sa</strong> فقط.<br>
-              كلمة المرور ستكون تلقائياً: <strong style="color:var(--navy);">Niti + رقم هويتك</strong>
-              <span style="color:var(--text-muted);">(مثال: Niti1234567890)</span>
+              Registration is restricted to <strong style="color:var(--navy);">@niti.edu.sa</strong> institutional email only.<br>
+              Your password will be automatically set to: <strong style="color:var(--navy);">Niti + your national ID</strong>
+              <span style="color:var(--text-muted);">(e.g. Niti1234567890)</span>
             </small>
           </div>
 
@@ -41,65 +41,65 @@
             <div class="row g-3">
               <!-- Full Name -->
               <div class="col-12">
-                <label class="form-label-custom">الاسم الكامل</label>
+                <label class="form-label-custom">Full Name</label>
                 <input type="text" name="username" class="form-control-custom"
-                       placeholder="الاسم الثلاثي" required minlength="3" maxlength="80">
+                       placeholder="Enter your full name" required minlength="3" maxlength="80">
               </div>
 
               <!-- Email -->
               <div class="col-12">
-                <label class="form-label-custom">البريد الإلكتروني المؤسسي</label>
+                <label class="form-label-custom">Institutional Email</label>
                 <input type="email" name="email" class="form-control-custom"
                        placeholder="you@niti.edu.sa" required autocomplete="email">
               </div>
 
               <!-- National ID -->
               <div class="col-12">
-                <label class="form-label-custom">رقم الهوية الوطنية</label>
+                <label class="form-label-custom">National ID Number</label>
                 <input type="text" name="national_id" id="national_id" class="form-control-custom"
-                       placeholder="أدخل رقم هويتك (10 أرقام)" required
+                       placeholder="Enter your 10-digit national ID" required
                        pattern="\d{10}" maxlength="10" minlength="10"
-                       title="رقم الهوية يجب أن يكون 10 أرقام">
+                       title="National ID must be exactly 10 digits">
                 <small style="color:var(--text-muted); font-size:.78rem; margin-top:.3rem; display:block;">
-                  <i class="bi bi-lock me-1"></i>ستكون كلمة مرورك: <strong id="pwPreview" style="color:var(--navy);">Niti + رقم هويتك</strong>
+                  <i class="bi bi-lock me-1"></i>Your password will be: <strong id="pwPreview" style="color:var(--navy);">Niti + your national ID</strong>
                 </small>
               </div>
 
               <!-- Program -->
               <div class="col-md-6">
-                <label class="form-label-custom">البرنامج</label>
+                <label class="form-label-custom">Program</label>
                 <select name="program" class="form-control-custom" required>
-                  <option value="" disabled selected>اختر برنامجك</option>
-                  <option value="academic">أكاديمي</option>
-                  <option value="job_skills">مهارات وظيفية</option>
+                  <option value="" disabled selected>Select your program</option>
+                  <option value="academic">Academic</option>
+                  <option value="job_skills">Job Skills</option>
                 </select>
               </div>
 
               <!-- Level -->
               <div class="col-md-6">
-                <label class="form-label-custom">المستوى</label>
+                <label class="form-label-custom">Level</label>
                 <select name="level" class="form-control-custom" required>
-                  <option value="" disabled selected>اختر مستواك</option>
-                  <option value="Beginner">Beginner — مبتدئ</option>
-                  <option value="Elementary">Elementary — أساسي</option>
+                  <option value="" disabled selected>Select your level</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Elementary">Elementary</option>
                   <option value="Pre-Intermediate">Pre-Intermediate</option>
-                  <option value="Intermediate">Intermediate — متوسط</option>
+                  <option value="Intermediate">Intermediate</option>
                   <option value="Upper-Intermediate">Upper-Intermediate</option>
-                  <option value="Advanced">Advanced — متقدم</option>
+                  <option value="Advanced">Advanced</option>
                 </select>
               </div>
             </div>
 
             <button type="submit" class="btn-gold w-100 justify-content-center mt-4" style="padding:.75rem;">
-              <i class="bi bi-person-plus"></i> إنشاء الحساب
+              <i class="bi bi-person-plus"></i> Create Account
             </button>
           </form>
 
           <hr style="border-color:var(--border); margin:1.5rem 0;">
 
           <p class="text-center mb-0" style="font-size:.85rem; color:var(--text-muted);">
-            لديك حساب بالفعل؟
-            <a href="{{ url_for('auth.login') }}" style="color:var(--gold-dark); font-weight:700;">تسجيل الدخول</a>
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" style="color:var(--gold-dark); font-weight:700;">Sign in</a>
           </p>
         </div>
       </div>
@@ -108,13 +108,12 @@
 </div>
 
 <script>
-  // Live preview of password as user types national ID
   const idInput = document.getElementById('national_id');
   const pwPreview = document.getElementById('pwPreview');
   if (idInput && pwPreview) {
     idInput.addEventListener('input', function() {
       const val = this.value.trim();
-      pwPreview.textContent = val ? 'Niti' + val : 'Niti + رقم هويتك';
+      pwPreview.textContent = val ? 'Niti' + val : 'Niti + your national ID';
     });
   }
 </script>

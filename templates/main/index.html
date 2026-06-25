@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}NITI Learn — منصة التعلم التشاركي{% endblock %}
+{% block title %}NITI Learn — Collaborative Learning Platform{% endblock %}
 
 {% block content %}
 
 <!-- ═══════════════════════════════════════════════════════
-     LANDING HERO  (full-screen with embedded login)
+     LANDING HERO
 ════════════════════════════════════════════════════════ -->
 <section class="landing-hero">
   <div class="container py-4">
@@ -14,31 +14,31 @@
       <div class="col-lg-6 hero-left fade-in-up">
         <div class="hero-eyebrow">
           <i class="bi bi-mortarboard-fill"></i>
-          المعهد الوطني للتدريب والصناعة
+          National Industrial Training Institute
         </div>
 
         <h1 class="hero-title">
-          منصتك التعليمية<br>
-          <span class="highlight">الأولى في NITI</span>
+          Your #1 Learning<br>
+          <span class="highlight">Platform at NITI</span>
         </h1>
 
         <p class="hero-subtitle">
-          تعلّم من زملائك، شارك معرفتك، وطوّر مهاراتك الأكاديمية والوظيفية في بيئة تشاركية مصممة خصيصاً لمتدربي المعهد.
+          Learn from your peers, share your knowledge, and develop your academic and professional skills in a collaborative environment designed exclusively for NITI trainees.
         </p>
 
         <!-- Quick stats -->
         <div class="d-flex flex-wrap gap-4 mt-2">
           <div>
             <div class="fw-800 text-gold" style="font-size:1.8rem;" id="statVideos">—</div>
-            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">فيديو تعليمي</div>
+            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">Learning Videos</div>
           </div>
           <div>
             <div class="fw-800 text-gold" style="font-size:1.8rem;" id="statUsers">—</div>
-            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">متدرب مسجّل</div>
+            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">Registered Trainees</div>
           </div>
           <div>
             <div class="fw-800 text-gold" style="font-size:1.8rem;">6+</div>
-            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">خدمة للطلاب</div>
+            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">Student Services</div>
           </div>
         </div>
       </div>
@@ -47,37 +47,37 @@
       <div class="col-lg-5 offset-lg-1 fade-in-up">
 
         {% if current_user.is_authenticated %}
-        <!-- ── Logged-in welcome ── -->
+        <!-- Logged-in welcome -->
         <div class="login-card text-center">
           <div class="login-card-header">
             <div class="logo-circle mx-auto mb-3">
               <i class="bi bi-person-check-fill"></i>
             </div>
-            <h4>أهلاً، {{ current_user.username }}!</h4>
-            <p>مرحباً بك في NITI Learn</p>
+            <h4>Welcome, {{ current_user.username }}!</h4>
+            <p>You're logged in to NITI Learn</p>
           </div>
           <div class="d-grid gap-2">
             <a href="{{ url_for('main.browse') }}" class="btn-gold justify-content-center">
-              <i class="bi bi-play-circle"></i> تصفح الفيديوهات
+              <i class="bi bi-play-circle"></i> Browse Videos
             </a>
             <a href="{{ url_for('videos.upload') }}" class="btn-navy justify-content-center">
-              <i class="bi bi-cloud-upload"></i> ارفع فيديو جديد
+              <i class="bi bi-cloud-upload"></i> Upload New Video
             </a>
             <a href="{{ url_for('auth.profile') }}" class="btn-outline-gold justify-content-center">
-              <i class="bi bi-person"></i> ملفي الشخصي
+              <i class="bi bi-person"></i> My Profile
             </a>
           </div>
         </div>
 
         {% else %}
-        <!-- ── Login form ── -->
+        <!-- Login form -->
         <div class="login-card">
           <div class="login-card-header">
             <div class="logo-circle">
               <i class="bi bi-mortarboard-fill"></i>
             </div>
-            <h4>تسجيل الدخول</h4>
-            <p>ادخل ببريدك المؤسسي @niti.edu.sa</p>
+            <h4>Sign In</h4>
+            <p>Use your institutional @niti.edu.sa email</p>
           </div>
 
           {% with messages = get_flashed_messages(with_categories=true) %}
@@ -90,24 +90,24 @@
 
           <form method="POST" action="{{ url_for('auth.login') }}">
             <div class="mb-3">
-              <label class="form-label-custom">البريد الإلكتروني</label>
+              <label class="form-label-custom">Email</label>
               <input type="email" name="email" class="form-control-custom"
                      placeholder="example@niti.edu.sa" required>
             </div>
             <div class="mb-3">
-              <label class="form-label-custom">كلمة المرور</label>
+              <label class="form-label-custom">Password</label>
               <input type="password" name="password" class="form-control-custom"
                      placeholder="••••••••" required>
             </div>
             <button type="submit" class="btn-gold w-100 justify-content-center mb-3">
-              <i class="bi bi-box-arrow-in-right"></i> دخول
+              <i class="bi bi-box-arrow-in-right"></i> Sign In
             </button>
           </form>
 
           <div class="text-center" style="font-size:.85rem; color:var(--text-muted);">
-            ليس لديك حساب؟
+            Don't have an account?
             <a href="{{ url_for('auth.register') }}" style="color:var(--gold-dark); font-weight:700;">
-              سجّل الآن
+              Register now
             </a>
           </div>
         </div>
@@ -127,25 +127,25 @@
       <div class="col-6 col-md-3">
         <div class="stat-item">
           <div class="stat-number" id="statVideos2">—</div>
-          <div class="stat-label">فيديو تعليمي</div>
+          <div class="stat-label">Learning Videos</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="stat-item">
           <div class="stat-number" id="statUsers2">—</div>
-          <div class="stat-label">متدرب مسجّل</div>
+          <div class="stat-label">Registered Trainees</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="stat-item">
           <div class="stat-number">4</div>
-          <div class="stat-label">ترمات دراسية</div>
+          <div class="stat-label">Terms</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="stat-item">
           <div class="stat-number">6</div>
-          <div class="stat-label">مستويات</div>
+          <div class="stat-label">Levels</div>
         </div>
       </div>
     </div>
@@ -153,17 +153,17 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
-     SERVICES FOR STUDENTS
+     STUDENT SERVICES
 ════════════════════════════════════════════════════════ -->
 <section class="services-section">
   <div class="container">
     <div class="text-center mb-5">
       <div class="section-tag mx-auto">
-        <i class="bi bi-grid-3x3-gap-fill"></i> خدماتنا
+        <i class="bi bi-grid-3x3-gap-fill"></i> Our Services
       </div>
-      <h2 class="section-title">كل ما تحتاجه في مكان واحد</h2>
+      <h2 class="section-title">Everything You Need in One Place</h2>
       <p class="section-subtitle">
-        منصة NITI Learn تقدّم لك مجموعة متكاملة من الخدمات التعليمية والتطويرية لمساعدتك على النجاح في مسيرتك التدريبية.
+        NITI Learn offers a comprehensive set of educational and developmental services to help you succeed in your training journey.
       </p>
     </div>
 
@@ -175,10 +175,10 @@
           <div class="service-icon gold">
             <i class="bi bi-play-circle-fill"></i>
           </div>
-          <h5>فيديوهات الشرح التشاركية</h5>
-          <p>شاهد شروحات زملائك المتدربين، مرتّبة حسب الترم والمستوى والوحدة، وقيّم المحتوى لمساعدة الأفضل على الظهور.</p>
+          <h5>Peer Explanation Videos</h5>
+          <p>Watch explanations from fellow trainees, organized by term, level, and unit. Rate content to help the best rise to the top.</p>
           <a href="{{ url_for('main.browse') }}" class="service-link">
-            تصفح الفيديوهات <i class="bi bi-arrow-left"></i>
+            Browse Videos <i class="bi bi-arrow-right"></i>
           </a>
         </div>
       </div>
@@ -189,15 +189,15 @@
           <div class="service-icon navy">
             <i class="bi bi-cloud-upload-fill"></i>
           </div>
-          <h5>شارك معرفتك</h5>
-          <p>سجّل وارفع شرحك الخاص، صنّفه بالترم والمستوى والوحدة، واحصل على تقييمات من زملائك لتحسين أسلوبك.</p>
+          <h5>Share Your Knowledge</h5>
+          <p>Record and upload your own explanations, categorize them by term, level, and unit, and receive ratings from your peers.</p>
           {% if current_user.is_authenticated %}
           <a href="{{ url_for('videos.upload') }}" class="service-link">
-            ارفع فيديو <i class="bi bi-arrow-left"></i>
+            Upload Video <i class="bi bi-arrow-right"></i>
           </a>
           {% else %}
           <a href="{{ url_for('auth.register') }}" class="service-link">
-            ابدأ الآن <i class="bi bi-arrow-left"></i>
+            Get Started <i class="bi bi-arrow-right"></i>
           </a>
           {% endif %}
         </div>
@@ -209,58 +209,52 @@
           <div class="service-icon green">
             <i class="bi bi-star-fill"></i>
           </div>
-          <h5>نظام التقييم والتعليقات</h5>
-          <p>قيّم شروحات زملائك من 1 إلى 5 نجوم، اترك تعليقاتك البنّاءة، وساعد المجتمع على اكتشاف أفضل المحتوى.</p>
+          <h5>Ratings & Comments</h5>
+          <p>Rate your peers' explanations from 1 to 5 stars, leave constructive feedback, and help the community discover the best content.</p>
           <a href="{{ url_for('main.browse') }}" class="service-link">
-            ابدأ التقييم <i class="bi bi-arrow-left"></i>
+            Start Rating <i class="bi bi-arrow-right"></i>
           </a>
         </div>
       </div>
 
-      <!-- 4. Study Planner -->
+      <!-- 4. Posts -->
       <div class="col-md-6 col-lg-4">
         <div class="service-card fade-in-up">
           <div class="service-icon blue">
-            <i class="bi bi-calendar-check-fill"></i>
+            <i class="bi bi-images"></i>
           </div>
-          <h5>منظّم الدراسة</h5>
-          <p>صنّف الفيديوهات حسب الترم والمستوى والوحدة لتتبع تقدمك الدراسي بسهولة وتنظيم خطة مراجعتك.</p>
-          <a href="{{ url_for('main.browse') }}" class="service-link">
-            ابدأ التنظيم <i class="bi bi-arrow-left"></i>
+          <h5>Educational Posts</h5>
+          <p>Teachers and trainees can share images with simple explanations — handwritten notes, diagrams, letter drawings, and more.</p>
+          <a href="{{ url_for('posts.feed') }}" class="service-link">
+            View Posts <i class="bi bi-arrow-right"></i>
           </a>
         </div>
       </div>
 
-      <!-- 5. Profile & Progress -->
+      <!-- 5. Live -->
       <div class="col-md-6 col-lg-4">
         <div class="service-card fade-in-up">
           <div class="service-icon purple">
-            <i class="bi bi-person-badge-fill"></i>
+            <i class="bi bi-broadcast"></i>
           </div>
-          <h5>ملفك الشخصي</h5>
-          <p>تابع فيديوهاتك المرفوعة، اطّلع على تقييماتك، وأظهر مساهماتك لزملائك في مجتمع NITI التعليمي.</p>
-          {% if current_user.is_authenticated %}
-          <a href="{{ url_for('auth.profile') }}" class="service-link">
-            ملفي الشخصي <i class="bi bi-arrow-left"></i>
+          <h5>Live Sessions</h5>
+          <p>Start or join live video sessions with fellow trainees. Share your screen, chat in real time, and learn together interactively.</p>
+          <a href="{{ url_for('live.index') }}" class="service-link">
+            Go Live <i class="bi bi-arrow-right"></i>
           </a>
-          {% else %}
-          <a href="{{ url_for('auth.register') }}" class="service-link">
-            أنشئ حسابك <i class="bi bi-arrow-left"></i>
-          </a>
-          {% endif %}
         </div>
       </div>
 
-      <!-- 6. Community -->
+      <!-- 6. Chat -->
       <div class="col-md-6 col-lg-4">
         <div class="service-card fade-in-up">
           <div class="service-icon orange">
-            <i class="bi bi-people-fill"></i>
+            <i class="bi bi-chat-dots-fill"></i>
           </div>
-          <h5>مجتمع المتدربين</h5>
-          <p>انضم إلى مجتمع متدربي NITI، تفاعل مع زملائك عبر التعليقات، وابنِ شبكة علاقات مهنية داخل المعهد.</p>
-          <a href="{{ url_for('main.browse') }}" class="service-link">
-            انضم الآن <i class="bi bi-arrow-left"></i>
+          <h5>Chat Rooms</h5>
+          <p>Connect with your fellow trainees in real-time chat rooms — general, academic, and job skills channels available.</p>
+          <a href="{{ url_for('chat.index') }}" class="service-link">
+            Open Chat <i class="bi bi-arrow-right"></i>
           </a>
         </div>
       </div>
@@ -272,16 +266,16 @@
 <!-- ═══════════════════════════════════════════════════════
      LATEST VIDEOS
 ════════════════════════════════════════════════════════ -->
-<section style="padding: 4rem 0; background: var(--off-white);">
+<section style="padding:4rem 0; background:var(--off-white);">
   <div class="container">
     <div class="d-flex align-items-end justify-content-between mb-4">
       <div>
-        <h2 class="section-heading">أحدث الفيديوهات</h2>
+        <h2 class="section-heading">Latest Videos</h2>
         <div class="section-divider"></div>
-        <p class="section-subheading">شروحات جديدة من زملائك المتدربين</p>
+        <p class="section-subheading">Fresh explanations from your fellow trainees</p>
       </div>
       <a href="{{ url_for('main.browse') }}" class="btn-outline-gold">
-        عرض الكل <i class="bi bi-arrow-left"></i>
+        View All <i class="bi bi-arrow-right"></i>
       </a>
     </div>
 
@@ -294,23 +288,23 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     CTA BANNER (only for guests)
+     CTA BANNER (guests only)
 ════════════════════════════════════════════════════════ -->
 {% if not current_user.is_authenticated %}
-<section style="background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); padding: 4rem 0;">
+<section style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%); padding:4rem 0;">
   <div class="container text-center">
     <h2 style="color:var(--white); font-weight:900; font-size:clamp(1.5rem,3vw,2.2rem); margin-bottom:.75rem;">
-      هل أنت مستعد للانضمام؟
+      Ready to Join?
     </h2>
     <p style="color:rgba(255,255,255,.7); max-width:480px; margin:0 auto 2rem; font-size:.95rem; line-height:1.7;">
-      سجّل ببريدك المؤسسي @niti.edu.sa وابدأ رحلتك في التعلم التشاركي مع زملائك في NITI.
+      Register with your @niti.edu.sa institutional email and start your collaborative learning journey with NITI trainees.
     </p>
     <div class="d-flex justify-content-center gap-3 flex-wrap">
       <a href="{{ url_for('auth.register') }}" class="btn-gold">
-        <i class="bi bi-person-plus"></i> إنشاء حساب مجاني
+        <i class="bi bi-person-plus"></i> Create Free Account
       </a>
       <a href="{{ url_for('main.browse') }}" class="btn-outline-gold">
-        <i class="bi bi-eye"></i> تصفح أولاً
+        <i class="bi bi-eye"></i> Browse First
       </a>
     </div>
   </div>
@@ -318,7 +312,6 @@
 {% endif %}
 
 <script>
-// Fetch stats & latest videos
 fetch('/api/stats').then(r=>r.json()).then(d=>{
   ['statVideos','statVideos2'].forEach(id=>{
     const el=document.getElementById(id);
@@ -334,7 +327,7 @@ fetch('/api/latest').then(r=>r.json()).then(videos=>{
   const wrap = document.getElementById('latestVideos');
   if(!wrap) return;
   if(!videos.length){
-    wrap.innerHTML = '<div class="col-12 empty-state"><i class="bi bi-camera-video"></i><h4>لا توجد فيديوهات بعد</h4><p>كن أول من يرفع شرحاً!</p></div>';
+    wrap.innerHTML = '<div class="col-12 empty-state"><i class="bi bi-camera-video"></i><h4>No videos yet</h4><p>Be the first to upload an explanation!</p></div>';
     return;
   }
   wrap.innerHTML = videos.map(v=>`
@@ -363,7 +356,7 @@ fetch('/api/latest').then(r=>r.json()).then(videos=>{
   `).join('');
 }).catch(()=>{
   const wrap = document.getElementById('latestVideos');
-  if(wrap) wrap.innerHTML = '<div class="col-12 empty-state"><i class="bi bi-camera-video"></i><h4>لا توجد فيديوهات بعد</h4></div>';
+  if(wrap) wrap.innerHTML = '<div class="col-12 empty-state"><i class="bi bi-camera-video"></i><h4>No videos yet</h4></div>';
 });
 </script>
 

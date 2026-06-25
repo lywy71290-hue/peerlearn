@@ -1,37 +1,37 @@
 {% extends "base.html" %}
-{% block title %}ملفي الشخصي{% endblock %}
+{% block title %}My Profile — NITI Learn{% endblock %}
 
 {% block content %}
 <div class="container py-5">
 
   <!-- Profile Header -->
-  <div style="background: #ffffff; border: 1px solid rgba(0,0,0,.08); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.06); border-top: 4px solid #CC0000;">
+  <div style="background:#ffffff; border:1px solid rgba(0,0,0,.08); border-radius:var(--radius-lg); padding:2.5rem; margin-bottom:2rem; box-shadow:0 2px 16px rgba(0,0,0,.06); border-top:4px solid var(--navy);">
     <div class="d-flex align-items-center gap-4 flex-wrap">
-      <div style="width:80px; height:80px; background: linear-gradient(135deg, #CC0000, #990000); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; color:#fff; flex-shrink:0;">
+      <div style="width:80px; height:80px; background:linear-gradient(135deg,var(--navy),#1a3a6b); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; color:#fff; flex-shrink:0;">
         {{ current_user.username[0].upper() }}
       </div>
       <div>
         <h2 style="font-weight:800; color:#1a1a1a; margin-bottom:.25rem;">{{ current_user.username }}</h2>
         <p class="text-muted mb-1"><i class="bi bi-envelope me-1"></i>{{ current_user.email }}</p>
         {% if current_user.program %}
-        <p class="mb-1" style="color:#CC0000; font-size:.88rem; font-weight:600;">
+        <p class="mb-1" style="color:var(--navy); font-size:.88rem; font-weight:600;">
           <i class="bi bi-mortarboard me-1"></i>
-          {{ 'أكاديمي' if current_user.program == 'academic' else 'مهارات وظيفية' }}
+          {{ 'Academic' if current_user.program == 'academic' else 'Job Skills' }}
           {% if current_user.level %}— {{ current_user.level }}{% endif %}
         </p>
         {% endif %}
-        <p class="text-muted small mb-0"><i class="bi bi-calendar3 me-1"></i>عضو منذ {{ current_user.created_at.strftime('%B %Y') }}</p>
+        <p class="text-muted small mb-0"><i class="bi bi-calendar3 me-1"></i>Member since {{ current_user.created_at.strftime('%B %Y') }}</p>
       </div>
       <div class="ms-auto d-flex gap-4 flex-wrap">
         <div class="text-center">
-          <div style="font-size:1.75rem; font-weight:800; background: linear-gradient(135deg, #ff4444, #CC0000); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">{{ videos|length }}</div>
-          <div class="text-muted small">فيديو مرفوع</div>
+          <div style="font-size:1.75rem; font-weight:800; color:var(--navy);">{{ videos|length }}</div>
+          <div class="text-muted small">Videos</div>
         </div>
         <div class="text-center">
-          <div style="font-size:1.75rem; font-weight:800; background: linear-gradient(135deg, #ff4444, #CC0000); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+          <div style="font-size:1.75rem; font-weight:800; color:var(--navy);">
             {{ current_user.comments|length }}
           </div>
-          <div class="text-muted small">تعليق</div>
+          <div class="text-muted small">Comments</div>
         </div>
       </div>
     </div>
@@ -40,11 +40,11 @@
   <!-- Upload CTA -->
   <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h3 class="section-heading mb-1">فيديوهاتي</h3>
-      <p class="section-subheading mb-0">الفيديوهات التي رفعتها على المنصة</p>
+      <h3 class="section-heading mb-1">My Videos</h3>
+      <p class="section-subheading mb-0">Videos you have uploaded to the platform</p>
     </div>
     <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom px-4">
-      <i class="bi bi-cloud-upload me-2"></i>رفع فيديو جديد
+      <i class="bi bi-cloud-upload me-2"></i>Upload New Video
     </a>
   </div>
 
@@ -69,14 +69,14 @@
               <span class="badge-custom badge-unit">{{ video.unit }}</span>
               {% if not video.is_approved %}
               <span class="badge-custom" style="background:rgba(234,179,8,.15); color:#92400e; border:1px solid rgba(234,179,8,.3);">
-                <i class="bi bi-hourglass-split me-1"></i>قيد المراجعة
+                <i class="bi bi-hourglass-split me-1"></i>Pending Review
               </span>
               {% endif %}
             </div>
             <div class="card-title-custom">{{ video.title }}</div>
             <div class="card-meta d-flex align-items-center justify-content-between mt-2">
-              <span><i class="bi bi-chat me-1"></i>{{ video.comments|length }} تعليق</span>
-              <span><i class="bi bi-star me-1"></i>{{ video.rating_count }} تقييم</span>
+              <span><i class="bi bi-chat me-1"></i>{{ video.comments|length }} comments</span>
+              <span><i class="bi bi-star me-1"></i>{{ video.rating_count }} ratings</span>
             </div>
           </div>
         </div>
@@ -87,10 +87,10 @@
   {% else %}
   <div class="empty-state">
     <i class="bi bi-camera-video"></i>
-    <h4>لا توجد فيديوهات بعد</h4>
-    <p>ابدأ بمشاركة معرفتك عبر رفع أول فيديو شرح!</p>
+    <h4>No videos yet</h4>
+    <p>Start sharing your knowledge by uploading your first explanation video!</p>
     <a href="{{ url_for('videos.upload') }}" class="btn btn-primary-custom mt-2">
-      <i class="bi bi-cloud-upload me-2"></i>ارفع أول فيديو
+      <i class="bi bi-cloud-upload me-2"></i>Upload First Video
     </a>
   </div>
   {% endif %}

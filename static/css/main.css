@@ -31,13 +31,13 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Tajawal', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: var(--off-white);
   color: var(--text-dark);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  direction: rtl;
+  direction: ltr;
 }
 
 main { flex: 1; }

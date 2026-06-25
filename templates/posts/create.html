@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}منشور جديد — NITI Learn{% endblock %}
+{% block title %}New Post — NITI Learn{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -7,8 +7,8 @@
     <div class="col-lg-7">
 
       <div class="mb-4">
-        <h1 class="section-heading">منشور جديد</h1>
-        <p class="section-subheading">شارك صورة أو رسماً مع شرح مبسط</p>
+        <h1 class="section-heading">New Post</h1>
+        <p class="section-subheading">Share an image or drawing with a simple explanation</p>
         <div class="section-divider"></div>
       </div>
 
@@ -17,20 +17,19 @@
 
           <!-- Image Upload -->
           <div class="mb-4">
-            <label class="form-label-custom"><i class="bi bi-image me-1"></i>الصورة (اختياري)</label>
+            <label class="form-label-custom"><i class="bi bi-image me-1"></i>Image (optional)</label>
             <div class="upload-zone" id="imageZone" style="min-height:160px;">
               <i class="bi bi-cloud-arrow-up-fill d-block" style="font-size:2rem; color:var(--gold);"></i>
-              <p class="fw-600 mb-1" style="color:#1a1a1a;">اسحب وأفلت الصورة هنا</p>
-              <p class="small text-muted">أو انقر للتصفح — JPG, PNG, GIF, WebP (الحد الأقصى 10 ميجابايت)</p>
+              <p class="fw-600 mb-1" style="color:#1a1a1a;">Drag & drop your image here</p>
+              <p class="small text-muted">or click to browse — JPG, PNG, GIF, WebP (max 10 MB)</p>
             </div>
             <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
-            <!-- Preview -->
             <div id="imagePreview" style="display:none; margin-top:1rem; text-align:center;">
-              <img id="previewImg" src="" alt="معاينة"
+              <img id="previewImg" src="" alt="Preview"
                    style="max-width:100%; max-height:300px; border-radius:12px; border:2px solid var(--gold);">
               <button type="button" onclick="clearImage()"
                       style="display:block; margin:.5rem auto 0; background:none; border:none; color:#e74c3c; font-size:.85rem; cursor:pointer;">
-                <i class="bi bi-x-circle me-1"></i>إزالة الصورة
+                <i class="bi bi-x-circle me-1"></i>Remove image
               </button>
             </div>
           </div>
@@ -38,23 +37,23 @@
           <!-- Caption -->
           <div class="mb-4">
             <label class="form-label-custom" for="caption">
-              <i class="bi bi-pencil me-1"></i>الشرح <span class="text-danger">*</span>
+              <i class="bi bi-pencil me-1"></i>Caption / Explanation <span class="text-danger">*</span>
             </label>
             <textarea name="caption" id="caption" class="form-control form-control-custom"
-                      rows="4" placeholder="اكتب شرحاً مبسطاً للصورة أو الفكرة التي تريد مشاركتها..."
+                      rows="4" placeholder="Write a simple explanation for the image or idea you want to share..."
                       required maxlength="1000"></textarea>
             <small class="text-muted" id="captionCount">0 / 1000</small>
           </div>
 
           <button type="submit" class="btn btn-primary-custom btn-lg w-100">
-            <i class="bi bi-send me-2"></i>نشر
+            <i class="bi bi-send me-2"></i>Publish
           </button>
         </form>
       </div>
 
       <div class="text-center mt-3">
         <a href="{{ url_for('posts.feed') }}" style="color:var(--text-muted); font-size:.85rem;">
-          <i class="bi bi-arrow-right me-1"></i>العودة إلى المنشورات
+          <i class="bi bi-arrow-left me-1"></i>Back to Posts
         </a>
       </div>
 
@@ -66,7 +65,7 @@
 <div class="spinner-overlay" id="spinnerOverlay" style="background:rgba(0,0,0,.7);">
   <div class="text-center">
     <div class="spinner-border mb-3" style="width:3rem;height:3rem;color:var(--gold);" role="status"></div>
-    <p class="text-white fw-600">جارٍ رفع المنشور...</p>
+    <p class="text-white fw-600">Uploading post...</p>
   </div>
 </div>
 
@@ -100,12 +99,10 @@
     imageZone.style.display = 'block';
   }
 
-  // Caption counter
   const caption = document.getElementById('caption');
   const counter = document.getElementById('captionCount');
   caption.addEventListener('input', () => { counter.textContent = caption.value.length + ' / 1000'; });
 
-  // Spinner on submit
   document.getElementById('postForm').addEventListener('submit', () => {
     document.getElementById('spinnerOverlay').classList.add('active');
   });

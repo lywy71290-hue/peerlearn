@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ room.title }} — بث مباشر{% endblock %}
+{% block title %}{{ room.title }} — Live Session{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-3 px-3 px-md-4">
@@ -7,18 +7,18 @@
   <!-- Header -->
   <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
     <a href="{{ url_for('live.index') }}" class="btn-outline-custom d-inline-flex align-items-center gap-1" style="padding:.4rem .9rem; font-size:.85rem;">
-      <i class="bi bi-arrow-right"></i> الغرف
+      <i class="bi bi-arrow-left"></i> Rooms
     </a>
     <div>
       <h2 style="font-weight:800; color:var(--navy); margin:0; font-size:1.2rem;">{{ room.title }}</h2>
       <div class="d-flex align-items-center gap-1 mt-1">
         <span class="live-dot"></span>
-        <span style="font-size:.78rem; color:var(--text-muted);">بث مباشر — {{ room.host_name }}</span>
+        <span style="font-size:.78rem; color:var(--text-muted);">Live — {{ room.host_name }}</span>
       </div>
     </div>
     <button id="leaveBtn" class="btn ms-auto" onclick="leaveRoom()"
             style="background:#e74c3c; color:#fff; border:none; border-radius:8px; padding:.4rem 1rem; font-size:.85rem; font-weight:700;">
-      <i class="bi bi-telephone-x me-1"></i> مغادرة
+      <i class="bi bi-telephone-x me-1"></i> Leave
     </button>
   </div>
 
@@ -29,19 +29,19 @@
         <!-- Local video -->
         <div class="live-video-wrap" id="local-wrap">
           <video id="localVideo" autoplay muted playsinline class="live-video"></video>
-          <div class="live-video-label">أنت{% if is_host %} (المضيف){% endif %}</div>
+          <div class="live-video-label">You{% if is_host %} (Host){% endif %}</div>
         </div>
       </div>
 
       <!-- Controls -->
       <div class="live-controls mt-3">
-        <button id="micBtn" class="live-ctrl-btn active" onclick="toggleMic()" title="ميكروفون">
+        <button id="micBtn" class="live-ctrl-btn active" onclick="toggleMic()" title="Microphone">
           <i class="bi bi-mic-fill"></i>
         </button>
-        <button id="camBtn" class="live-ctrl-btn active" onclick="toggleCam()" title="كاميرا">
+        <button id="camBtn" class="live-ctrl-btn active" onclick="toggleCam()" title="Camera">
           <i class="bi bi-camera-video-fill"></i>
         </button>
-        <button id="screenBtn" class="live-ctrl-btn" onclick="toggleScreen()" title="مشاركة الشاشة">
+        <button id="screenBtn" class="live-ctrl-btn" onclick="toggleScreen()" title="Share Screen">
           <i class="bi bi-display"></i>
         </button>
       </div>
@@ -51,7 +51,7 @@
     <div class="col-lg-3">
       <!-- Participants -->
       <div class="live-sidebar-card mb-3">
-        <div class="live-sidebar-title"><i class="bi bi-people me-2"></i>المشاركون</div>
+        <div class="live-sidebar-title"><i class="bi bi-people me-2"></i>Participants</div>
         <div id="participantsList" class="live-participants-list">
           <div class="live-participant-item">
             <div class="live-participant-avatar">{{ current_user.username[0]|upper }}</div>
@@ -62,11 +62,11 @@
 
       <!-- Live Chat -->
       <div class="live-sidebar-card d-flex flex-column" style="flex:1; min-height:0;">
-        <div class="live-sidebar-title"><i class="bi bi-chat-dots me-2"></i>دردشة الغرفة</div>
+        <div class="live-sidebar-title"><i class="bi bi-chat-dots me-2"></i>Room Chat</div>
         <div id="liveChat" class="live-chat-box"></div>
         <div class="live-chat-input-bar">
           <input type="text" id="liveChatInput" class="live-chat-input"
-                 placeholder="رسالة..." maxlength="200"
+                 placeholder="Message..." maxlength="200"
                  onkeydown="if(event.key==='Enter'){ sendLiveMsg(); }">
           <button class="live-chat-send" onclick="sendLiveMsg()">
             <i class="bi bi-send-fill"></i>
@@ -77,7 +77,6 @@
   </div>
 </div>
 
-<!-- simple-peer CDN -->
 <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
 
 <script>
@@ -86,14 +85,13 @@ const MY_ID     = {{ current_user.id }};
 const MY_NAME   = "{{ current_user.username }}";
 const IS_HOST   = {{ 'true' if is_host else 'false' }};
 
-let localStream  = null;
-let peers        = {};   // { peerId: SimplePeer }
-let micEnabled   = true;
-let camEnabled   = true;
+let localStream   = null;
+let peers         = {};
+let micEnabled    = true;
+let camEnabled    = true;
 let screenSharing = false;
-let lastSignalTs = 0;
+let lastSignalTs  = 0;
 
-// ── Get local media ──────────────────────────────────────────────────────────
 async function initMedia() {
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -103,24 +101,20 @@ async function initMedia() {
       localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
       document.getElementById('localVideo').srcObject = localStream;
     } catch(e2) {
-      addLiveChatMsg('النظام', 'تعذّر الوصول إلى الكاميرا/الميكروفون. تحقق من الأذونات.');
+      addLiveChatMsg('System', 'Could not access camera/microphone. Please check permissions.');
     }
   }
 }
 
-// ── Join room & get existing peers ───────────────────────────────────────────
 async function joinRoom() {
   const res  = await fetch(`/live/${ROOM_ID}/join`, { method: 'POST' });
   const data = await res.json();
   if (data.error) { alert(data.error); return; }
-
-  // Connect to each existing peer
   data.peers.forEach(p => {
     if (p.id != MY_ID) createPeer(p.id, p.name, true);
   });
 }
 
-// ── Create WebRTC peer ────────────────────────────────────────────────────────
 function createPeer(peerId, peerName, initiator) {
   if (peers[peerId]) return;
   const peer = new SimplePeer({
@@ -129,7 +123,6 @@ function createPeer(peerId, peerName, initiator) {
     trickle: true,
     config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] },
   });
-
   peer.on('signal', data => {
     fetch(`/live/${ROOM_ID}/signal/send`, {
       method: 'POST',
@@ -137,19 +130,13 @@ function createPeer(peerId, peerName, initiator) {
       body: JSON.stringify({ to: peerId, type: 'signal', data }),
     });
   });
-
-  peer.on('stream', stream => {
-    addRemoteVideo(peerId, peerName, stream);
-  });
-
+  peer.on('stream', stream => { addRemoteVideo(peerId, peerName, stream); });
   peer.on('close', () => removeRemoteVideo(peerId));
   peer.on('error', () => removeRemoteVideo(peerId));
-
   peers[peerId] = peer;
   addParticipant(peerId, peerName);
 }
 
-// ── Signal polling ────────────────────────────────────────────────────────────
 function pollSignals() {
   fetch(`/live/${ROOM_ID}/signal/poll?after=${lastSignalTs}`)
     .then(r => r.json())
@@ -158,25 +145,16 @@ function pollSignals() {
         if (s.ts > lastSignalTs) lastSignalTs = s.ts;
         if (s.from == MY_ID) return;
         if (s.type === 'signal') {
-          if (!peers[s.from]) createPeer(s.from, 'متدرب', false);
+          if (!peers[s.from]) createPeer(s.from, 'Trainee', false);
           try { peers[s.from].signal(s.data); } catch(e) {}
         }
-        if (s.type === 'chat') {
-          addLiveChatMsg(s.name, s.msg);
-        }
-        if (s.type === 'join') {
-          addParticipant(s.from, s.name);
-        }
-        if (s.type === 'leave') {
-          removeRemoteVideo(s.from);
-          removeParticipant(s.from);
-        }
+        if (s.type === 'chat') addLiveChatMsg(s.name, s.msg);
+        if (s.type === 'join') addParticipant(s.from, s.name);
+        if (s.type === 'leave') { removeRemoteVideo(s.from); removeParticipant(s.from); }
       });
-    })
-    .catch(() => {});
+    }).catch(() => {});
 }
 
-// ── Peer polling (new joiners) ────────────────────────────────────────────────
 function pollPeers() {
   fetch(`/live/${ROOM_ID}/peers`)
     .then(r => r.json())
@@ -185,11 +163,9 @@ function pollPeers() {
       data.peers.forEach(p => {
         if (p.id != MY_ID && !peers[p.id]) createPeer(p.id, p.name, true);
       });
-    })
-    .catch(() => {});
+    }).catch(() => {});
 }
 
-// ── Video DOM helpers ─────────────────────────────────────────────────────────
 function addRemoteVideo(id, name, stream) {
   if (document.getElementById('remote-wrap-' + id)) return;
   const grid = document.getElementById('videoGrid');
@@ -210,7 +186,6 @@ function removeRemoteVideo(id) {
   removeParticipant(id);
 }
 
-// ── Participants list ─────────────────────────────────────────────────────────
 function addParticipant(id, name) {
   const list = document.getElementById('participantsList');
   if (document.getElementById('p-' + id)) return;
@@ -225,7 +200,6 @@ function removeParticipant(id) {
   if (el) el.remove();
 }
 
-// ── Controls ──────────────────────────────────────────────────────────────────
 function toggleMic() {
   micEnabled = !micEnabled;
   localStream?.getAudioTracks().forEach(t => t.enabled = micEnabled);
@@ -256,9 +230,7 @@ async function toggleScreen() {
       document.getElementById('screenBtn').classList.add('active');
       screenTrack.onended = () => stopScreen();
     } catch(e) {}
-  } else {
-    stopScreen();
-  }
+  } else { stopScreen(); }
 }
 
 function stopScreen() {
@@ -274,7 +246,6 @@ function stopScreen() {
   document.getElementById('screenBtn').classList.remove('active');
 }
 
-// ── Live Chat ─────────────────────────────────────────────────────────────────
 function sendLiveMsg() {
   const input = document.getElementById('liveChatInput');
   const msg   = input.value.trim();
@@ -297,7 +268,6 @@ function addLiveChatMsg(name, msg) {
   box.scrollTop = box.scrollHeight;
 }
 
-// ── Leave ─────────────────────────────────────────────────────────────────────
 function leaveRoom() {
   fetch(`/live/${ROOM_ID}/signal/send`, {
     method: 'POST',
@@ -318,11 +288,9 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 (async () => {
   await initMedia();
   await joinRoom();
-  // Announce join
   fetch(`/live/${ROOM_ID}/signal/send`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

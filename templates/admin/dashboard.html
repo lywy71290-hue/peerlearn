@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}لوحة الإدارة — NITI Learn{% endblock %}
+{% block title %}Admin Dashboard — NITI Learn{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -8,23 +8,23 @@
   <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
     <div>
       <h1 style="font-weight:900; color:var(--navy); margin-bottom:.25rem;">
-        <i class="bi bi-shield-check me-2" style="color:var(--gold);"></i>لوحة الإدارة
+        <i class="bi bi-shield-check me-2" style="color:var(--gold);"></i>Admin Dashboard
       </h1>
-      <p style="color:var(--text-muted); margin:0;">إدارة متدربي NITI Learn والمحتوى المرفوع</p>
+      <p style="color:var(--text-muted); margin:0;">Manage NITI Learn trainees and uploaded content</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
       <a href="{{ url_for('admin.pending') }}" class="btn-gold position-relative">
-        <i class="bi bi-hourglass-split"></i> مراجعة الفيديوهات
+        <i class="bi bi-hourglass-split"></i> Review Videos
         {% if pending_count > 0 %}
         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill"
               style="background:#dc2626; font-size:.7rem;">{{ pending_count }}</span>
         {% endif %}
       </a>
       <a href="{{ url_for('admin.users') }}" class="btn-outline-gold">
-        <i class="bi bi-people"></i> المتدربون
+        <i class="bi bi-people"></i> Trainees
       </a>
       <a href="{{ url_for('admin.videos') }}" class="btn-outline-gold">
-        <i class="bi bi-camera-video"></i> الفيديوهات
+        <i class="bi bi-camera-video"></i> Videos
       </a>
     </div>
   </div>
@@ -36,14 +36,14 @@
     <div style="font-size:2rem; color:#dc2626;"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <div class="flex-grow-1">
       <div style="font-weight:800; color:#991b1b; font-size:1rem;">
-        يوجد {{ pending_count }} فيديو{% if pending_count > 1 %}ات{% endif %} تنتظر مراجعتك
+        {{ pending_count }} video{{ 's' if pending_count > 1 else '' }} awaiting your review
       </div>
       <div style="color:#b91c1c; font-size:.85rem;">
-        لن تظهر هذه الفيديوهات للمتدربين حتى تقوم بالموافقة عليها.
+        These videos will not be visible to trainees until you approve them.
       </div>
     </div>
     <a href="{{ url_for('admin.pending') }}" class="btn-gold" style="white-space:nowrap;">
-      <i class="bi bi-eye"></i> مراجعة الآن
+      <i class="bi bi-eye"></i> Review Now
     </a>
   </div>
   {% endif %}
@@ -54,7 +54,7 @@
       <div class="card-custom p-4 text-center" style="border-top:4px solid var(--navy);">
         <div style="font-size:2.2rem; font-weight:900; color:var(--navy);">{{ total_users }}</div>
         <div style="color:var(--text-muted); font-size:.82rem; margin-top:.25rem;">
-          <i class="bi bi-people me-1"></i>المتدربون
+          <i class="bi bi-people me-1"></i>Trainees
         </div>
       </div>
     </div>
@@ -62,7 +62,7 @@
       <div class="card-custom p-4 text-center" style="border-top:4px solid #16a34a;">
         <div style="font-size:2.2rem; font-weight:900; color:#16a34a;">{{ total_videos }}</div>
         <div style="color:var(--text-muted); font-size:.82rem; margin-top:.25rem;">
-          <i class="bi bi-camera-video me-1"></i>فيديوهات منشورة
+          <i class="bi bi-camera-video me-1"></i>Published Videos
         </div>
       </div>
     </div>
@@ -70,7 +70,7 @@
       <div class="card-custom p-4 text-center" style="border-top:4px solid #dc2626;">
         <div style="font-size:2.2rem; font-weight:900; color:#dc2626;">{{ pending_count }}</div>
         <div style="color:var(--text-muted); font-size:.82rem; margin-top:.25rem;">
-          <i class="bi bi-hourglass-split me-1"></i>بانتظار المراجعة
+          <i class="bi bi-hourglass-split me-1"></i>Pending Review
         </div>
       </div>
     </div>
@@ -78,7 +78,7 @@
       <div class="card-custom p-4 text-center" style="border-top:4px solid var(--gold-dark);">
         <div style="font-size:2.2rem; font-weight:900; color:var(--gold-dark);">{{ total_comments }}</div>
         <div style="color:var(--text-muted); font-size:.82rem; margin-top:.25rem;">
-          <i class="bi bi-chat me-1"></i>التعليقات
+          <i class="bi bi-chat me-1"></i>Comments
         </div>
       </div>
     </div>
@@ -90,27 +90,27 @@
     <div class="px-4 py-3 d-flex align-items-center justify-content-between"
          style="background:rgba(220,38,38,.05); border-bottom:1px solid rgba(220,38,38,.15);">
       <h5 class="mb-0" style="font-weight:800; color:#991b1b;">
-        <i class="bi bi-hourglass-split me-2"></i>أحدث الفيديوهات المعلقة
+        <i class="bi bi-hourglass-split me-2"></i>Latest Pending Videos
       </h5>
       <a href="{{ url_for('admin.pending') }}" class="btn-gold" style="font-size:.8rem; padding:.35rem .9rem;">
-        عرض الكل
+        View All
       </a>
     </div>
     <div class="table-responsive">
       <table class="table table-sm table-hover mb-0">
         <thead>
           <tr style="font-size:.8rem; color:var(--text-muted);">
-            <th class="px-4">العنوان</th>
-            <th>الرافع</th>
-            <th>الترم / المستوى</th>
-            <th>التاريخ</th>
-            <th>الإجراء</th>
+            <th class="px-4">Title</th>
+            <th>Uploader</th>
+            <th>Term / Level</th>
+            <th>Date</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody style="font-size:.85rem;">
           {% for v in pending_videos %}
           <tr>
-            <td class="px-4 fw-600" style="font-weight:600;">{{ v.title[:45] }}{% if v.title|length > 45 %}…{% endif %}</td>
+            <td class="px-4" style="font-weight:600;">{{ v.title[:45] }}{% if v.title|length > 45 %}…{% endif %}</td>
             <td style="color:var(--text-muted);">{{ v.author.username }}</td>
             <td>
               <span class="badge-custom badge-term" style="font-size:.65rem;">{{ v.term }}</span>
@@ -121,7 +121,7 @@
               <form method="POST" action="{{ url_for('admin.approve_video', video_id=v.id) }}" class="d-inline">
                 <button type="submit" class="btn btn-sm"
                         style="background:#16a34a; color:#fff; border:none; border-radius:6px; padding:.2rem .6rem; font-size:.75rem;">
-                  <i class="bi bi-check-lg"></i> قبول
+                  <i class="bi bi-check-lg"></i> Approve
                 </button>
               </form>
             </td>
@@ -141,9 +141,9 @@
         <div class="px-4 py-3 d-flex align-items-center justify-content-between"
              style="background:var(--off-white); border-bottom:1px solid var(--border);">
           <h5 class="mb-0" style="font-weight:800; color:var(--navy);">
-            <i class="bi bi-person-plus me-2" style="color:var(--gold);"></i>أحدث المتدربين
+            <i class="bi bi-person-plus me-2" style="color:var(--gold);"></i>Latest Trainees
           </h5>
-          <a href="{{ url_for('admin.users') }}" class="btn-outline-gold" style="font-size:.78rem; padding:.3rem .8rem;">عرض الكل</a>
+          <a href="{{ url_for('admin.users') }}" class="btn-outline-gold" style="font-size:.78rem; padding:.3rem .8rem;">View All</a>
         </div>
         <div class="p-3">
           {% if recent_users %}
@@ -151,7 +151,7 @@
             <table class="table table-sm table-hover mb-0">
               <thead>
                 <tr style="font-size:.8rem; color:var(--text-muted);">
-                  <th>الاسم</th><th>البريد</th><th>البرنامج</th><th>التاريخ</th>
+                  <th>Name</th><th>Email</th><th>Program</th><th>Date</th>
                 </tr>
               </thead>
               <tbody style="font-size:.83rem;">
@@ -159,12 +159,12 @@
                 <tr>
                   <td>
                     <span style="font-weight:700;">{{ u.username }}</span>
-                    {% if u.is_admin %}<span class="badge ms-1" style="background:var(--navy); color:#fff; font-size:.6rem;">مشرف</span>{% endif %}
+                    {% if u.is_admin %}<span class="badge ms-1" style="background:var(--navy); color:#fff; font-size:.6rem;">Admin</span>{% endif %}
                   </td>
                   <td style="color:var(--text-muted);">{{ u.email }}</td>
                   <td>
-                    {% if u.program == 'academic' %}<span class="badge-custom badge-term" style="font-size:.65rem;">أكاديمي</span>
-                    {% elif u.program == 'job_skills' %}<span class="badge-custom badge-unit" style="font-size:.65rem;">مهارات</span>
+                    {% if u.program == 'academic' %}<span class="badge-custom badge-term" style="font-size:.65rem;">Academic</span>
+                    {% elif u.program == 'job_skills' %}<span class="badge-custom badge-unit" style="font-size:.65rem;">Job Skills</span>
                     {% else %}—{% endif %}
                   </td>
                   <td style="color:var(--text-muted);">{{ u.created_at.strftime('%Y/%m/%d') }}</td>
@@ -174,7 +174,7 @@
             </table>
           </div>
           {% else %}
-          <p class="text-center py-3 mb-0" style="color:var(--text-muted);">لا يوجد مستخدمون بعد.</p>
+          <p class="text-center py-3 mb-0" style="color:var(--text-muted);">No users yet.</p>
           {% endif %}
         </div>
       </div>
@@ -186,9 +186,9 @@
         <div class="px-4 py-3 d-flex align-items-center justify-content-between"
              style="background:var(--off-white); border-bottom:1px solid var(--border);">
           <h5 class="mb-0" style="font-weight:800; color:var(--navy);">
-            <i class="bi bi-camera-video me-2" style="color:var(--gold);"></i>أحدث الفيديوهات المنشورة
+            <i class="bi bi-camera-video me-2" style="color:var(--gold);"></i>Latest Published Videos
           </h5>
-          <a href="{{ url_for('admin.videos') }}" class="btn-outline-gold" style="font-size:.78rem; padding:.3rem .8rem;">عرض الكل</a>
+          <a href="{{ url_for('admin.videos') }}" class="btn-outline-gold" style="font-size:.78rem; padding:.3rem .8rem;">View All</a>
         </div>
         <div class="p-3">
           {% if recent_videos %}
@@ -196,7 +196,7 @@
             <table class="table table-sm table-hover mb-0">
               <thead>
                 <tr style="font-size:.8rem; color:var(--text-muted);">
-                  <th>العنوان</th><th>الرافع</th><th>الترم</th><th>التاريخ</th>
+                  <th>Title</th><th>Uploader</th><th>Term</th><th>Date</th>
                 </tr>
               </thead>
               <tbody style="font-size:.83rem;">
@@ -217,7 +217,7 @@
             </table>
           </div>
           {% else %}
-          <p class="text-center py-3 mb-0" style="color:var(--text-muted);">لا توجد فيديوهات منشورة بعد.</p>
+          <p class="text-center py-3 mb-0" style="color:var(--text-muted);">No published videos yet.</p>
           {% endif %}
         </div>
       </div>

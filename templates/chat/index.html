@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}المحادثات — NITI Learn{% endblock %}
+{% block title %}Chat Rooms — NITI Learn{% endblock %}
 
 {% block content %}
 <div class="container py-5">
   <div class="mb-4">
-    <h1 class="section-heading">غرف المحادثة</h1>
-    <p class="section-subheading">تواصل مع زملائك المتدربين في الوقت الفعلي</p>
+    <h1 class="section-heading">Chat Rooms</h1>
+    <p class="section-subheading">Connect with fellow trainees in real time</p>
     <div class="section-divider"></div>
   </div>
 
@@ -21,12 +21,12 @@
           </div>
           <div class="chat-room-name">{{ room_name }}</div>
           <div class="chat-room-desc">
-            {% if room_id == 'general' %}نقاشات عامة لجميع المتدربين
-            {% elif room_id == 'academic' %}للمتدربين في البرنامج الأكاديمي
-            {% else %}للمتدربين في برنامج المهارات الوظيفية{% endif %}
+            {% if room_id == 'general' %}General discussions for all trainees
+            {% elif room_id == 'academic' %}For trainees in the Academic program
+            {% else %}For trainees in the Job Skills program{% endif %}
           </div>
           <div class="chat-room-enter">
-            <i class="bi bi-arrow-left-circle-fill"></i> ادخل الغرفة
+            <i class="bi bi-arrow-right-circle-fill"></i> Enter Room
           </div>
         </div>
       </a>
