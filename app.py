@@ -33,7 +33,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
-    login_manager.login_message = "يرجى تسجيل الدخول للوصول إلى هذه الصفحة."
+    login_manager.login_message = "Please sign in to access this page."
     login_manager.login_message_category = "info"
     migrate.init_app(app, db)
 
@@ -74,6 +74,7 @@ def create_app():
         from models.notification import Notification
         from models.post         import Post, PostComment, PostLike
         from models.chat         import ChatMessage
+        from models.otp          import OTPCode
         try:
             db.create_all()
             app.logger.info("✅ Database tables created/verified successfully.")

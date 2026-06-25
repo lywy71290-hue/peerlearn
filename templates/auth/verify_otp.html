@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Enter Login Code — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-md-7 col-lg-5">
+        <div class="auth-card">
+
+          <div class="text-center mb-4">
+            <div class="auth-logo" style="background:linear-gradient(135deg,#0a1628,#1e3a5f);">
+              <i class="bi bi-envelope-check-fill" style="color:#c9a84c;"></i>
+            </div>
+            <h4 style="font-weight:800; color:var(--navy); margin-bottom:.25rem;">Check Your Email</h4>
+            <p style="color:var(--text-muted); font-size:.85rem; margin:0;">
+              We sent a 6-digit code to<br>
+              <strong style="color:var(--navy);">{{ email_masked }}</strong>
+            </p>
+          </div>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for cat, msg in messages %}
+              <div class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-dismissible fade show rounded-3 mb-3" role="alert">
+                <i class="bi bi-{{ 'exclamation-circle' if cat in ['danger','error'] else 'info-circle' }} me-2"></i>{{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endwith %}
+
+          <form method="POST" action="{{ url_for('auth.verify_otp') }}">
+            <div class="mb-4">
+              <label class="form-label-custom text-center d-block">Login Code</label>
+              <input type="text" name="otp_code" id="otpInput"
+                     class="form-control-custom"
+                     placeholder="_ _ _ _ _ _"
+                     maxlength="6" pattern="\d{6}" inputmode="numeric"
+                     autocomplete="one-time-code" required autofocus
+                     style="font-family:monospace; letter-spacing:8px; font-size:1.8rem;
+                            text-align:center; padding:1rem;">
+              <p style="font-size:.78rem; color:var(--text-muted); margin-top:.4rem; text-align:center;">
+                <i class="bi bi-clock me-1"></i>Code expires in 10 minutes
+              </p>
+            </div>
+
+            <button type="submit" class="btn-gold w-100 justify-content-center" style="padding:.75rem;">
+              <i class="bi bi-check-circle"></i> Verify & Sign In
+            </button>
+          </form>
+
+          <hr style="border-color:var(--border); margin:1.5rem 0;">
+
+          <div class="text-center">
+            <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:.75rem;">
+              Didn't receive the code?
+            </p>
+            <form method="POST" action="{{ url_for('auth.resend_otp') }}" style="display:inline;">
+              <button type="submit" style="background:none; border:none; color:var(--gold-dark);
+                      font-weight:700; font-size:.88rem; cursor:pointer; text-decoration:underline;">
+                <i class="bi bi-arrow-repeat me-1"></i>Resend Code
+              </button>
+            </form>
+            &nbsp;·&nbsp;
+            <a href="{{ url_for('auth.login') }}" style="color:var(--text-muted); font-size:.85rem;">
+              Use a different ID
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Auto-submit when 6 digits are entered
+document.getElementById('otpInput').addEventListener('input', function() {
+  if (this.value.length === 6 && /^\d{6}$/.test(this.value)) {
+    this.closest('form').submit();
+  }
+});
+</script>
+{% endblock %}

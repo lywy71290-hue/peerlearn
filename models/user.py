@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     # New fields: program (academic / job_skills), level, admin flag
     program = db.Column(db.String(30), default="")   # 'academic' or 'job_skills'
     level = db.Column(db.String(30), default="")     # e.g. 'Intermediate'
+    national_id = db.Column(db.String(10), unique=True, nullable=True)  # 10-digit Saudi National ID
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

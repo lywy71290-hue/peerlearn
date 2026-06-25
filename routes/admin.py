@@ -218,3 +218,87 @@ def delete_video(video_id):
     db.session.commit()
     flash(f"تم حذف الفيديو «{title}» بنجاح.", "success")
     return redirect(url_for("admin.videos"))
+
+
+# ── Import Trainees (CSV/Excel) ───────────────────────────────────────────────
+@admin_bp.route("/import-trainees", methods=["GET", "POST"])
+@login_required
+@admin_required
+def import_trainees():
+    results = None
+    if request.method == "POST":
+        import io, csv
+        file = request.files.get("file")
+        if not file or not file.filename:
+            flash("Please upload a CSV or Excel file.", "danger")
+            return render_template("admin/import_trainees.html", results=None)
+
+        filename = file.filename.lower()
+        added = 0
+        skipped = 0
+        errors = []
+
+        try:
+            if filename.endswith(".csv"):
+                stream = io.StringIO(file.stream.read().decode("utf-8-sig"))
+                reader = csv.DictReader(stream)
+                rows = list(reader)
+            elif filename.endswith((".xlsx", ".xls")):
+                import openpyxl
+                wb = openpyxl.load_workbook(file.stream)
+                ws = wb.active
+                headers = [str(c.value).strip() if c.value else "" for c in ws[1]]
+                rows = []
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    rows.append(dict(zip(headers, row)))
+            else:
+                flash("Unsupported file format. Please upload CSV or XLSX.", "danger")
+                return render_template("admin/import_trainees.html", results=None)
+
+            for i, row in enumerate(rows, start=2):
+                # Normalize keys
+                row = {k.strip().lower(): (str(v).strip() if v is not None else "") for k, v in row.items()}
+
+                name        = row.get("name") or row.get("username") or row.get("full name") or row.get("trainee name") or ""
+                national_id = row.get("national_id") or row.get("national id") or row.get("id") or row.get("رقم الهوية") or ""
+                email       = row.get("email") or row.get("البريد") or ""
+                program     = row.get("program") or row.get("البرنامج") or "academic"
+                level       = row.get("level") or row.get("المستوى") or "Beginner"
+
+                if not name or not national_id or not email:
+                    errors.append(f"Row {i}: missing name, national_id, or email — skipped.")
+                    skipped += 1
+                    continue
+
+                if not national_id.isdigit() or len(national_id) != 10:
+                    errors.append(f"Row {i}: invalid national_id '{national_id}' — skipped.")
+                    skipped += 1
+                    continue
+
+                if User.query.filter_by(national_id=national_id).first():
+                    skipped += 1
+                    continue
+
+                if User.query.filter_by(email=email.lower()).first():
+                    skipped += 1
+                    continue
+
+                user = User(
+                    username=name,
+                    email=email.lower(),
+                    national_id=national_id,
+                    program=program,
+                    level=level,
+                )
+                user.set_password("Niti" + national_id)
+                db.session.add(user)
+                added += 1
+
+            db.session.commit()
+            results = {"added": added, "skipped": skipped, "errors": errors}
+            flash(f"Import complete: {added} trainees added, {skipped} skipped.", "success")
+
+        except Exception as e:
+            flash(f"Error processing file: {e}", "danger")
+
+    return render_template("admin/import_trainees.html", results=results)

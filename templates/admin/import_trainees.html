@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Import Trainees — Admin{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:800px; padding:2rem 1rem;">
+
+  <div style="display:flex; align-items:center; gap:1rem; margin-bottom:2rem;">
+    <a href="{{ url_for('admin.dashboard') }}" style="color:var(--text-muted); text-decoration:none; font-size:.9rem;">
+      ← Back to Dashboard
+    </a>
+  </div>
+
+  <h2 style="color:var(--navy); font-weight:800; margin-bottom:.25rem;">
+    <i class="bi bi-upload me-2" style="color:var(--gold-dark);"></i>Import Trainees
+  </h2>
+  <p style="color:var(--text-muted); margin-bottom:2rem;">
+    Upload a CSV or Excel file to bulk-add trainees. Existing records (by National ID or email) will be skipped.
+  </p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ 'danger' if cat == 'error' else cat }} mb-3" style="padding:.75rem 1rem; border-radius:8px;">
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Upload Form -->
+  <div style="background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(10,22,40,.08); padding:2rem; margin-bottom:2rem;">
+    <form method="POST" enctype="multipart/form-data">
+      <div style="border:2px dashed var(--border); border-radius:12px; padding:2rem; text-align:center; margin-bottom:1.5rem; background:#f9fafb;">
+        <i class="bi bi-file-earmark-spreadsheet" style="font-size:2.5rem; color:var(--gold-dark); display:block; margin-bottom:.75rem;"></i>
+        <p style="color:var(--navy); font-weight:600; margin-bottom:.25rem;">Choose CSV or Excel file</p>
+        <p style="color:var(--text-muted); font-size:.85rem; margin-bottom:1rem;">Supported formats: .csv, .xlsx, .xls</p>
+        <input type="file" name="file" accept=".csv,.xlsx,.xls" required
+               style="display:block; margin:0 auto; font-size:.9rem;">
+      </div>
+      <button type="submit" class="btn-gold justify-content-center" style="padding:.75rem 2rem; width:100%;">
+        <i class="bi bi-cloud-upload me-2"></i>Upload & Import
+      </button>
+    </form>
+  </div>
+
+  <!-- Results -->
+  {% if results %}
+  <div style="background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(10,22,40,.08); padding:2rem; margin-bottom:2rem;">
+    <h5 style="color:var(--navy); font-weight:700; margin-bottom:1rem;">Import Results</h5>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+      <div style="background:#f0fdf4; border-radius:10px; padding:1rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:900; color:#16a34a;">{{ results.added }}</div>
+        <div style="color:#16a34a; font-size:.85rem; font-weight:600;">Trainees Added</div>
+      </div>
+      <div style="background:#fffbeb; border-radius:10px; padding:1rem; text-align:center;">
+        <div style="font-size:2rem; font-weight:900; color:#d97706;">{{ results.skipped }}</div>
+        <div style="color:#d97706; font-size:.85rem; font-weight:600;">Skipped (already exist)</div>
+      </div>
+    </div>
+    {% if results.errors %}
+    <div style="background:#fef2f2; border-radius:8px; padding:1rem;">
+      <p style="color:#dc2626; font-weight:600; margin-bottom:.5rem; font-size:.9rem;">
+        <i class="bi bi-exclamation-triangle me-1"></i>Rows with issues:
+      </p>
+      <ul style="margin:0; padding-left:1.25rem; color:#dc2626; font-size:.82rem;">
+        {% for err in results.errors %}
+          <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- File Format Guide -->
+  <div style="background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(10,22,40,.08); padding:2rem;">
+    <h5 style="color:var(--navy); font-weight:700; margin-bottom:1rem;">
+      <i class="bi bi-info-circle me-2" style="color:var(--gold-dark);"></i>Required File Format
+    </h5>
+    <p style="color:var(--text-muted); font-size:.88rem; margin-bottom:1rem;">
+      Your file must have these column headers (first row):
+    </p>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:.85rem;">
+        <thead>
+          <tr style="background:var(--navy); color:#fff;">
+            <th style="padding:.6rem .75rem; text-align:left;">Column</th>
+            <th style="padding:.6rem .75rem; text-align:left;">Required</th>
+            <th style="padding:.6rem .75rem; text-align:left;">Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.6rem .75rem; font-weight:600;">name</td>
+            <td style="padding:.6rem .75rem; color:#16a34a;">✅ Required</td>
+            <td style="padding:.6rem .75rem; color:var(--text-muted);">Ahmed Al-Anazi</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.6rem .75rem; font-weight:600;">national_id</td>
+            <td style="padding:.6rem .75rem; color:#16a34a;">✅ Required</td>
+            <td style="padding:.6rem .75rem; color:var(--text-muted);">1234567890</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.6rem .75rem; font-weight:600;">email</td>
+            <td style="padding:.6rem .75rem; color:#16a34a;">✅ Required</td>
+            <td style="padding:.6rem .75rem; color:var(--text-muted);">1234567890@niti.edu.sa</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.6rem .75rem; font-weight:600;">program</td>
+            <td style="padding:.6rem .75rem; color:#d97706;">Optional</td>
+            <td style="padding:.6rem .75rem; color:var(--text-muted);">academic / job_skills</td>
+          </tr>
+          <tr>
+            <td style="padding:.6rem .75rem; font-weight:600;">level</td>
+            <td style="padding:.6rem .75rem; color:#d97706;">Optional</td>
+            <td style="padding:.6rem .75rem; color:var(--text-muted);">Beginner / Intermediate / Advanced</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--text-muted); font-size:.8rem; margin-top:1rem; margin-bottom:0;">
+      <i class="bi bi-key me-1"></i>
+      Default password for all imported trainees: <strong>Niti</strong> + their National ID (e.g. <code>Niti1234567890</code>)
+    </p>
+  </div>
+
+</div>
+{% endblock %}

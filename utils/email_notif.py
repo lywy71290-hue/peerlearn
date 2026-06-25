@@ -147,3 +147,30 @@ def notify_uploader_rejected(uploader_email: str, uploader_name: str,
     </div>
     """
     send_email(uploader_email, subject, html)
+
+
+def send_otp_email(to_email: str, trainee_name: str, otp_code: str):
+    """Send OTP login code to trainee email."""
+    subject = "[NITI Learn] Your Login Code"
+    html = f"""
+    <div style="font-family:'Segoe UI',Arial,sans-serif; max-width:520px; margin:0 auto; background:#f4f6fb; padding:24px; border-radius:12px;">
+      <div style="background:#0a1628; padding:20px 24px; border-radius:10px 10px 0 0; text-align:center;">
+        <h2 style="color:#c9a84c; margin:0; font-size:1.5rem; letter-spacing:1px;">NITI Learn</h2>
+        <p style="color:rgba(255,255,255,.6); margin:4px 0 0; font-size:.85rem;">National Industrial Training Institute</p>
+      </div>
+      <div style="background:#fff; padding:32px 24px; border-radius:0 0 10px 10px; border:1px solid #e5e7eb; border-top:none; text-align:center;">
+        <p style="color:#374151; font-size:1rem; margin-top:0;">Hello <strong>{trainee_name}</strong>,</p>
+        <p style="color:#374151; font-size:.95rem;">Your one-time login code for NITI Learn is:</p>
+        <div style="background:#f4f6fb; border:2px dashed #c9a84c; border-radius:12px; padding:20px 0; margin:24px 0;">
+          <span style="font-size:2.8rem; font-weight:900; letter-spacing:12px; color:#0a1628; font-family:monospace;">{otp_code}</span>
+        </div>
+        <p style="color:#6b7280; font-size:.88rem;">This code is valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0;">
+        <p style="color:#9ca3af; font-size:.78rem; margin:0;">
+          If you did not request this code, please ignore this email.<br>
+          This is an automated message from NITI Learn — do not reply.
+        </p>
+      </div>
+    </div>
+    """
+    return send_email(to_email, subject, html)

@@ -26,8 +26,20 @@ try:
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS program VARCHAR(30) DEFAULT '';",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS level  VARCHAR(30) DEFAULT '';",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE;",
+        # Users national_id column
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS national_id VARCHAR(10) DEFAULT NULL;",
         # Videos moderation column
         "ALTER TABLE videos ADD COLUMN IF NOT EXISTS is_approved BOOLEAN NOT NULL DEFAULT FALSE;",
+        # OTP codes table
+        """
+        CREATE TABLE IF NOT EXISTS otp_codes (
+            id         SERIAL PRIMARY KEY,
+            user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            code       VARCHAR(6) NOT NULL,
+            used       BOOLEAN NOT NULL DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
+        """,
         # Notifications table
         """
         CREATE TABLE IF NOT EXISTS notifications (
