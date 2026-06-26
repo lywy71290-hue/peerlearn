@@ -1,363 +1,110 @@
 {% extends "base.html" %}
-{% block title %}NITI Learn — Collaborative Learning Platform{% endblock %}
+{% block title %}NITI Learn — Sign In{% endblock %}
 
 {% block content %}
 
-<!-- ═══════════════════════════════════════════════════════
-     LANDING HERO
-════════════════════════════════════════════════════════ -->
-<section class="landing-hero">
-  <div class="container py-4">
-    <div class="row align-items-center g-5">
+{% if current_user.is_authenticated %}
+  {# Logged-in users go straight to dashboard #}
+  <script>window.location.href = "{{ url_for('main.dashboard') }}";</script>
+  <noscript><meta http-equiv="refresh" content="0;url={{ url_for('main.dashboard') }}"></noscript>
 
-      <!-- Left: headline -->
-      <div class="col-lg-6 hero-left fade-in-up">
-        <div class="hero-eyebrow">
-          <i class="bi bi-mortarboard-fill"></i>
-          National Industrial Training Institute
-        </div>
+{% else %}
+{# ─── GUEST: Full-page login ─────────────────────────────────────────── #}
+<div style="min-height:100vh; display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(135deg, var(--navy) 0%, #112240 60%, #0d1b2a 100%);
+            padding:2rem 1rem;">
 
-        <h1 class="hero-title">
-          Your #1 Learning<br>
-          <span class="highlight">Platform at NITI</span>
-        </h1>
+  <div style="width:100%; max-width:440px;">
 
-        <p class="hero-subtitle">
-          Learn from your peers, share your knowledge, and develop your academic and professional skills in a collaborative environment designed exclusively for NITI trainees.
-        </p>
-
-        <!-- Quick stats -->
-        <div class="d-flex flex-wrap gap-4 mt-2">
-          <div>
-            <div class="fw-800 text-gold" style="font-size:1.8rem;" id="statVideos">—</div>
-            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">Learning Videos</div>
-          </div>
-          <div>
-            <div class="fw-800 text-gold" style="font-size:1.8rem;" id="statUsers">—</div>
-            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">Registered Trainees</div>
-          </div>
-          <div>
-            <div class="fw-800 text-gold" style="font-size:1.8rem;">6+</div>
-            <div style="color:rgba(255,255,255,.6); font-size:.8rem;">Student Services</div>
-          </div>
-        </div>
+    <!-- Branding -->
+    <div style="text-align:center; margin-bottom:2rem;">
+      <div style="width:72px; height:72px; background:var(--gold-dark); border-radius:18px;
+                  display:flex; align-items:center; justify-content:center;
+                  margin:0 auto 1rem; font-size:2rem; color:var(--navy);">
+        <i class="bi bi-mortarboard-fill"></i>
       </div>
-
-      <!-- Right: Login / Welcome card -->
-      <div class="col-lg-5 offset-lg-1 fade-in-up">
-
-        {% if current_user.is_authenticated %}
-        <!-- Logged-in welcome -->
-        <div class="login-card text-center">
-          <div class="login-card-header">
-            <div class="logo-circle mx-auto mb-3">
-              <i class="bi bi-person-check-fill"></i>
-            </div>
-            <h4>Welcome, {{ current_user.username }}!</h4>
-            <p>You're logged in to NITI Learn</p>
-          </div>
-          <div class="d-grid gap-2">
-            <a href="{{ url_for('main.browse') }}" class="btn-gold justify-content-center">
-              <i class="bi bi-play-circle"></i> Browse Videos
-            </a>
-            <a href="{{ url_for('videos.upload') }}" class="btn-navy justify-content-center">
-              <i class="bi bi-cloud-upload"></i> Upload New Video
-            </a>
-            <a href="{{ url_for('auth.profile') }}" class="btn-outline-gold justify-content-center">
-              <i class="bi bi-person"></i> My Profile
-            </a>
-          </div>
-        </div>
-
-        {% else %}
-        <!-- Login form -->
-        <div class="login-card">
-          <div class="login-card-header">
-            <div class="logo-circle">
-              <i class="bi bi-mortarboard-fill"></i>
-            </div>
-            <h4>Sign In</h4>
-            <p>Use your institutional @niti.edu.sa email</p>
-          </div>
-
-          {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for cat, msg in messages %}
-              <div class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-custom mb-3" role="alert">
-                <i class="bi bi-exclamation-circle me-2"></i>{{ msg }}
-              </div>
-            {% endfor %}
-          {% endwith %}
-
-          <form method="POST" action="{{ url_for('auth.login') }}">
-            <div class="mb-3">
-              <label class="form-label-custom">Email</label>
-              <input type="email" name="email" class="form-control-custom"
-                     placeholder="example@niti.edu.sa" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label-custom">Password</label>
-              <input type="password" name="password" class="form-control-custom"
-                     placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-gold w-100 justify-content-center mb-3">
-              <i class="bi bi-box-arrow-in-right"></i> Sign In
-            </button>
-          </form>
-
-          <div class="text-center" style="font-size:.85rem; color:var(--text-muted);">
-            Don't have an account?
-            <a href="{{ url_for('auth.register') }}" style="color:var(--gold-dark); font-weight:700;">
-              Register now
-            </a>
-          </div>
-        </div>
-        {% endif %}
-
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════
-     STATS BAR
-════════════════════════════════════════════════════════ -->
-<div class="stats-bar">
-  <div class="container">
-    <div class="row g-0 text-center">
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <div class="stat-number" id="statVideos2">—</div>
-          <div class="stat-label">Learning Videos</div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <div class="stat-number" id="statUsers2">—</div>
-          <div class="stat-label">Registered Trainees</div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <div class="stat-number">4</div>
-          <div class="stat-label">Terms</div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-item">
-          <div class="stat-number">6</div>
-          <div class="stat-label">Levels</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════
-     STUDENT SERVICES
-════════════════════════════════════════════════════════ -->
-<section class="services-section">
-  <div class="container">
-    <div class="text-center mb-5">
-      <div class="section-tag mx-auto">
-        <i class="bi bi-grid-3x3-gap-fill"></i> Our Services
-      </div>
-      <h2 class="section-title">Everything You Need in One Place</h2>
-      <p class="section-subtitle">
-        NITI Learn offers a comprehensive set of educational and developmental services to help you succeed in your training journey.
+      <h1 style="color:#fff; font-weight:900; font-size:2rem; margin-bottom:.25rem;">NITI Learn</h1>
+      <p style="color:rgba(255,255,255,.55); font-size:.9rem; margin:0;">
+        National Industrial Training Institute
       </p>
     </div>
 
-    <div class="row g-4">
+    <!-- Card -->
+    <div style="background:#fff; border-radius:20px; padding:2.5rem 2rem;
+                box-shadow:0 20px 60px rgba(0,0,0,.35);">
 
-      <!-- 1. Video Learning -->
-      <div class="col-md-6 col-lg-4">
-        <div class="service-card fade-in-up">
-          <div class="service-icon gold">
-            <i class="bi bi-play-circle-fill"></i>
+      <h3 style="color:var(--navy); font-weight:800; margin-bottom:.25rem; text-align:center;">Welcome Back</h3>
+      <p style="color:var(--text-muted); font-size:.88rem; text-align:center; margin-bottom:1.75rem;">
+        Sign in with your institutional account to continue
+      </p>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div style="padding:.7rem 1rem; border-radius:8px; margin-bottom:1rem; font-size:.86rem;
+                      background:{{ '#fef2f2' if cat == 'danger' else '#eff6ff' }};
+                      color:{{ '#dc2626' if cat == 'danger' else '#1d4ed8' }};
+                      border:1px solid {{ '#fecaca' if cat == 'danger' else '#bfdbfe' }};">
+            <i class="bi bi-{{ 'exclamation-circle' if cat == 'danger' else 'info-circle' }} me-1"></i>{{ msg }}
           </div>
-          <h5>Peer Explanation Videos</h5>
-          <p>Watch explanations from fellow trainees, organized by term, level, and unit. Rate content to help the best rise to the top.</p>
-          <a href="{{ url_for('main.browse') }}" class="service-link">
-            Browse Videos <i class="bi bi-arrow-right"></i>
-          </a>
+        {% endfor %}
+      {% endwith %}
+
+      <!-- Login Form -->
+      <form method="POST" action="{{ url_for('auth.login') }}">
+
+        <div style="margin-bottom:1.1rem;">
+          <label style="display:block; font-weight:600; color:var(--navy); margin-bottom:.4rem; font-size:.88rem;">
+            Institutional Email
+          </label>
+          <input type="email" name="email" required
+                 placeholder="your.id@niti.edu.sa"
+                 autocomplete="email" autofocus
+                 style="width:100%; padding:.75rem 1rem; border:1.5px solid var(--border);
+                        border-radius:10px; font-size:.95rem; outline:none; box-sizing:border-box;
+                        transition:border-color .2s; font-family:inherit;"
+                 onfocus="this.style.borderColor='var(--gold-dark)'"
+                 onblur="this.style.borderColor='var(--border)'">
         </div>
-      </div>
 
-      <!-- 2. Upload & Share -->
-      <div class="col-md-6 col-lg-4">
-        <div class="service-card fade-in-up">
-          <div class="service-icon navy">
-            <i class="bi bi-cloud-upload-fill"></i>
-          </div>
-          <h5>Share Your Knowledge</h5>
-          <p>Record and upload your own explanations, categorize them by term, level, and unit, and receive ratings from your peers.</p>
-          {% if current_user.is_authenticated %}
-          <a href="{{ url_for('videos.upload') }}" class="service-link">
-            Upload Video <i class="bi bi-arrow-right"></i>
-          </a>
-          {% else %}
-          <a href="{{ url_for('auth.register') }}" class="service-link">
-            Get Started <i class="bi bi-arrow-right"></i>
-          </a>
-          {% endif %}
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block; font-weight:600; color:var(--navy); margin-bottom:.4rem; font-size:.88rem;">
+            Password
+          </label>
+          <input type="password" name="password" required
+                 placeholder="Enter your password"
+                 autocomplete="current-password"
+                 style="width:100%; padding:.75rem 1rem; border:1.5px solid var(--border);
+                        border-radius:10px; font-size:.95rem; outline:none; box-sizing:border-box;
+                        transition:border-color .2s; font-family:inherit;"
+                 onfocus="this.style.borderColor='var(--gold-dark)'"
+                 onblur="this.style.borderColor='var(--border)'">
+          <p style="color:var(--text-muted); font-size:.76rem; margin-top:.35rem; margin-bottom:0;">
+            <i class="bi bi-key me-1"></i>Default: <strong>Niti</strong> + National ID &nbsp;(e.g. <code>Niti1234567890</code>)
+          </p>
         </div>
-      </div>
 
-      <!-- 3. Peer Rating -->
-      <div class="col-md-6 col-lg-4">
-        <div class="service-card fade-in-up">
-          <div class="service-icon green">
-            <i class="bi bi-star-fill"></i>
-          </div>
-          <h5>Ratings & Comments</h5>
-          <p>Rate your peers' explanations from 1 to 5 stars, leave constructive feedback, and help the community discover the best content.</p>
-          <a href="{{ url_for('main.browse') }}" class="service-link">
-            Start Rating <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-      </div>
+        <button type="submit"
+                style="width:100%; padding:.85rem; background:var(--gold-dark); color:var(--navy);
+                       border:none; border-radius:10px; font-weight:800; font-size:1rem;
+                       cursor:pointer; transition:opacity .2s; font-family:inherit;"
+                onmouseover="this.style.opacity='.85'"
+                onmouseout="this.style.opacity='1'">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+      </form>
 
-      <!-- 4. Posts -->
-      <div class="col-md-6 col-lg-4">
-        <div class="service-card fade-in-up">
-          <div class="service-icon blue">
-            <i class="bi bi-images"></i>
-          </div>
-          <h5>Educational Posts</h5>
-          <p>Teachers and trainees can share images with simple explanations — handwritten notes, diagrams, letter drawings, and more.</p>
-          <a href="{{ url_for('posts.feed') }}" class="service-link">
-            View Posts <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-
-      <!-- 5. Live -->
-      <div class="col-md-6 col-lg-4">
-        <div class="service-card fade-in-up">
-          <div class="service-icon purple">
-            <i class="bi bi-broadcast"></i>
-          </div>
-          <h5>Live Sessions</h5>
-          <p>Start or join live video sessions with fellow trainees. Share your screen, chat in real time, and learn together interactively.</p>
-          <a href="{{ url_for('live.index') }}" class="service-link">
-            Go Live <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-
-      <!-- 6. Chat -->
-      <div class="col-md-6 col-lg-4">
-        <div class="service-card fade-in-up">
-          <div class="service-icon orange">
-            <i class="bi bi-chat-dots-fill"></i>
-          </div>
-          <h5>Chat Rooms</h5>
-          <p>Connect with your fellow trainees in real-time chat rooms — general, academic, and job skills channels available.</p>
-          <a href="{{ url_for('chat.index') }}" class="service-link">
-            Open Chat <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════
-     LATEST VIDEOS
-════════════════════════════════════════════════════════ -->
-<section style="padding:4rem 0; background:var(--off-white);">
-  <div class="container">
-    <div class="d-flex align-items-end justify-content-between mb-4">
-      <div>
-        <h2 class="section-heading">Latest Videos</h2>
-        <div class="section-divider"></div>
-        <p class="section-subheading">Fresh explanations from your fellow trainees</p>
-      </div>
-      <a href="{{ url_for('main.browse') }}" class="btn-outline-gold">
-        View All <i class="bi bi-arrow-right"></i>
-      </a>
+      <p style="text-align:center; color:var(--text-muted); font-size:.8rem; margin-top:1.25rem; margin-bottom:0;">
+        <i class="bi bi-info-circle me-1"></i>Not registered? Contact your NITI administrator.
+      </p>
     </div>
 
-    <div class="row g-4" id="latestVideos">
-      <div class="col-12 text-center py-5">
-        <div class="spinner-border" style="color:var(--gold);" role="status"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════
-     CTA BANNER (guests only)
-════════════════════════════════════════════════════════ -->
-{% if not current_user.is_authenticated %}
-<section style="background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%); padding:4rem 0;">
-  <div class="container text-center">
-    <h2 style="color:var(--white); font-weight:900; font-size:clamp(1.5rem,3vw,2.2rem); margin-bottom:.75rem;">
-      Ready to Join?
-    </h2>
-    <p style="color:rgba(255,255,255,.7); max-width:480px; margin:0 auto 2rem; font-size:.95rem; line-height:1.7;">
-      Register with your @niti.edu.sa institutional email and start your collaborative learning journey with NITI trainees.
+    <!-- Footer note -->
+    <p style="text-align:center; color:rgba(255,255,255,.35); font-size:.75rem; margin-top:1.5rem;">
+      © 2025 NITI Learn · National Industrial Training Institute
     </p>
-    <div class="d-flex justify-content-center gap-3 flex-wrap">
-      <a href="{{ url_for('auth.register') }}" class="btn-gold">
-        <i class="bi bi-person-plus"></i> Create Free Account
-      </a>
-      <a href="{{ url_for('main.browse') }}" class="btn-outline-gold">
-        <i class="bi bi-eye"></i> Browse First
-      </a>
-    </div>
   </div>
-</section>
+</div>
 {% endif %}
-
-<script>
-fetch('/api/stats').then(r=>r.json()).then(d=>{
-  ['statVideos','statVideos2'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.textContent = d.videos ?? '—';
-  });
-  ['statUsers','statUsers2'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.textContent = d.users ?? '—';
-  });
-}).catch(()=>{});
-
-fetch('/api/latest').then(r=>r.json()).then(videos=>{
-  const wrap = document.getElementById('latestVideos');
-  if(!wrap) return;
-  if(!videos.length){
-    wrap.innerHTML = '<div class="col-12 empty-state"><i class="bi bi-camera-video"></i><h4>No videos yet</h4><p>Be the first to upload an explanation!</p></div>';
-    return;
-  }
-  wrap.innerHTML = videos.map(v=>`
-    <div class="col-md-6 col-lg-4">
-      <a href="/videos/${v.id}" class="text-decoration-none">
-        <div class="card-custom">
-          <div class="video-thumb-wrap">
-            <video src="${v.url}" muted preload="metadata"></video>
-            <div class="play-overlay"><i class="bi bi-play-circle-fill"></i></div>
-          </div>
-          <div class="card-body-custom">
-            <div class="d-flex flex-wrap gap-1 mb-2">
-              <span class="badge-custom badge-term">${v.term}</span>
-              <span class="badge-custom badge-level">${v.level}</span>
-              <span class="badge-custom badge-unit">${v.unit}</span>
-            </div>
-            <div class="card-title-custom">${v.title}</div>
-            <div class="card-meta d-flex justify-content-between align-items-center mt-2">
-              <span><i class="bi bi-person-circle me-1"></i>${v.uploader}</span>
-              <span class="stars">★</span><span style="font-size:.78rem;"> ${v.rating}</span>
-            </div>
-          </div>
-        </div>
-      </a>
-    </div>
-  `).join('');
-}).catch(()=>{
-  const wrap = document.getElementById('latestVideos');
-  if(wrap) wrap.innerHTML = '<div class="col-12 empty-state"><i class="bi bi-camera-video"></i><h4>No videos yet</h4></div>';
-});
-</script>
 
 {% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — NITI Learn{% endblock %}
+
+{% block content %}
+
+<!-- ── Welcome Banner ─────────────────────────────────────────────────── -->
+<section style="background:linear-gradient(135deg, var(--navy) 0%, #112240 100%);
+                padding:3rem 0 2.5rem; margin-bottom:0;">
+  <div class="container">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+      <div>
+        <p style="color:var(--gold); font-weight:700; font-size:.9rem; margin-bottom:.35rem; letter-spacing:.04em;">
+          <i class="bi bi-mortarboard-fill me-2"></i>NATIONAL INDUSTRIAL TRAINING INSTITUTE
+        </p>
+        <h1 style="color:#fff; font-weight:900; font-size:2rem; margin-bottom:.4rem;">
+          Welcome back, {{ current_user.username.split()[0] }}! 👋
+        </h1>
+        <p style="color:rgba(255,255,255,.6); margin:0; font-size:.95rem;">
+          What would you like to do today?
+        </p>
+      </div>
+      <!-- Stats -->
+      <div style="display:flex; gap:2rem;">
+        <div style="text-align:center;">
+          <div style="font-size:1.8rem; font-weight:900; color:var(--gold);">{{ stats.videos }}</div>
+          <div style="color:rgba(255,255,255,.5); font-size:.78rem;">Videos</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.8rem; font-weight:900; color:var(--gold);">{{ stats.users }}</div>
+          <div style="color:rgba(255,255,255,.5); font-size:.78rem;">Trainees</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.8rem; font-weight:900; color:var(--gold);">6+</div>
+          <div style="color:rgba(255,255,255,.5); font-size:.78rem;">Services</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Services Grid ──────────────────────────────────────────────────── -->
+<section style="padding:2.5rem 0; background:var(--bg);">
+  <div class="container">
+    <h2 style="color:var(--navy); font-weight:800; margin-bottom:1.5rem; font-size:1.3rem;">
+      <i class="bi bi-grid-3x3-gap-fill me-2" style="color:var(--gold-dark);"></i>Services
+    </h2>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:2.5rem;">
+
+      <!-- Browse Videos -->
+      <a href="{{ url_for('main.browse') }}" class="service-card">
+        <div class="service-icon" style="background:rgba(10,22,40,.08);">
+          <i class="bi bi-play-circle-fill" style="color:var(--navy);"></i>
+        </div>
+        <div class="service-title">Browse Videos</div>
+        <div class="service-desc">Watch peer explanation videos</div>
+      </a>
+
+      <!-- Upload Video -->
+      <a href="{{ url_for('videos.upload') }}" class="service-card">
+        <div class="service-icon" style="background:rgba(201,168,76,.12);">
+          <i class="bi bi-cloud-upload-fill" style="color:var(--gold-dark);"></i>
+        </div>
+        <div class="service-title">Upload Video</div>
+        <div class="service-desc">Share your knowledge with peers</div>
+      </a>
+
+      <!-- Posts -->
+      <a href="{{ url_for('posts.feed') }}" class="service-card">
+        <div class="service-icon" style="background:rgba(99,102,241,.1);">
+          <i class="bi bi-images" style="color:#6366f1;"></i>
+        </div>
+        <div class="service-title">Posts & Images</div>
+        <div class="service-desc">Share educational images & notes</div>
+      </a>
+
+      <!-- Chat -->
+      <a href="{{ url_for('chat.index') }}" class="service-card">
+        <div class="service-icon" style="background:rgba(16,185,129,.1);">
+          <i class="bi bi-chat-dots-fill" style="color:#10b981;"></i>
+        </div>
+        <div class="service-title">Chat Rooms</div>
+        <div class="service-desc">Discuss with fellow trainees</div>
+      </a>
+
+      <!-- Live -->
+      <a href="{{ url_for('live.index') }}" class="service-card">
+        <div class="service-icon" style="background:rgba(239,68,68,.1);">
+          <i class="bi bi-camera-video-fill" style="color:#ef4444;"></i>
+        </div>
+        <div class="service-title">Live Sessions</div>
+        <div class="service-desc">Join or start a live broadcast</div>
+      </a>
+
+      <!-- Profile -->
+      <a href="{{ url_for('auth.profile') }}" class="service-card">
+        <div class="service-icon" style="background:rgba(245,158,11,.1);">
+          <i class="bi bi-person-circle" style="color:#f59e0b;"></i>
+        </div>
+        <div class="service-title">My Profile</div>
+        <div class="service-desc">View your uploads & activity</div>
+      </a>
+
+      {% if current_user.is_admin %}
+      <!-- Admin -->
+      <a href="{{ url_for('admin.dashboard') }}" class="service-card" style="border-color:rgba(220,38,38,.3);">
+        <div class="service-icon" style="background:rgba(220,38,38,.1);">
+          <i class="bi bi-shield-check" style="color:#dc2626;"></i>
+        </div>
+        <div class="service-title" style="color:#dc2626;">Admin Panel</div>
+        <div class="service-desc">Manage trainees & content</div>
+      </a>
+      {% endif %}
+
+    </div>
+
+    <!-- ── Latest Videos ──────────────────────────────────────────────── -->
+    {% if latest_videos %}
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:.75rem;">
+      <h2 style="color:var(--navy); font-weight:800; font-size:1.3rem; margin:0;">
+        <i class="bi bi-clock-history me-2" style="color:var(--gold-dark);"></i>Latest Videos
+      </h2>
+      <a href="{{ url_for('main.browse') }}" style="color:var(--gold-dark); font-weight:600; font-size:.88rem; text-decoration:none;">
+        View all <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem;">
+      {% for video in latest_videos %}
+      <a href="{{ url_for('videos.detail', video_id=video.id) }}"
+         style="background:#fff; border-radius:14px; overflow:hidden; text-decoration:none;
+                box-shadow:0 2px 12px rgba(10,22,40,.07); transition:transform .2s, box-shadow .2s; display:block;"
+         onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 24px rgba(10,22,40,.12)'"
+         onmouseout="this.style.transform=''; this.style.boxShadow='0 2px 12px rgba(10,22,40,.07)'">
+        <div style="position:relative; background:var(--navy); height:160px; display:flex; align-items:center; justify-content:center;">
+          <i class="bi bi-play-circle" style="font-size:3rem; color:rgba(255,255,255,.4);"></i>
+          <div style="position:absolute; top:.6rem; right:.6rem; background:var(--gold-dark); color:var(--navy);
+                      font-size:.7rem; font-weight:700; padding:.2rem .5rem; border-radius:6px;">
+            {{ video.term or 'General' }}
+          </div>
+        </div>
+        <div style="padding:1rem;">
+          <h6 style="color:var(--navy); font-weight:700; margin-bottom:.3rem; font-size:.92rem;
+                     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            {{ video.title }}
+          </h6>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="color:var(--text-muted); font-size:.78rem;">
+              <i class="bi bi-person me-1"></i>{{ video.author.username.split()[0] }}
+            </span>
+            <span style="color:var(--gold-dark); font-size:.78rem; font-weight:600;">
+              <i class="bi bi-star-fill me-1"></i>{{ "%.1f"|format(video.avg_rating) }}
+            </span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="background:#fff; border-radius:14px; padding:3rem; text-align:center; box-shadow:0 2px 12px rgba(10,22,40,.07);">
+      <i class="bi bi-camera-video" style="font-size:3rem; color:var(--border); display:block; margin-bottom:1rem;"></i>
+      <h5 style="color:var(--navy); font-weight:700; margin-bottom:.5rem;">No videos yet</h5>
+      <p style="color:var(--text-muted); margin-bottom:1.25rem; font-size:.9rem;">Be the first to share a learning video!</p>
+      <a href="{{ url_for('videos.upload') }}" class="btn-gold">
+        <i class="bi bi-cloud-upload me-2"></i>Upload First Video
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<style>
+.service-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  text-decoration: none;
+  display: block;
+  box-shadow: 0 2px 10px rgba(10,22,40,.07);
+  border: 1.5px solid transparent;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.service-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(10,22,40,.12);
+  border-color: var(--gold-dark);
+}
+.service-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: .85rem;
+}
+.service-title {
+  color: var(--navy);
+  font-weight: 700;
+  font-size: .95rem;
+  margin-bottom: .2rem;
+}
+.service-desc {
+  color: var(--text-muted);
+  font-size: .78rem;
+  line-height: 1.4;
+}
+</style>
+
+{% endblock %}

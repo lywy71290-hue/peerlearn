@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
+from flask_login import login_required, current_user
 from models.video import Video
 from models.user import User
 
@@ -12,6 +13,17 @@ UNITS = [f"Unit {i}" for i in range(1, 13)]
 @main_bp.route("/")
 def index():
     return render_template("main/index.html", terms=TERMS, levels=LEVELS, units=UNITS)
+
+
+@main_bp.route("/dashboard")
+@login_required
+def dashboard():
+    latest_videos = Video.query.filter_by(is_approved=True).order_by(Video.created_at.desc()).limit(6).all()
+    stats = {
+        "videos": Video.query.filter_by(is_approved=True).count(),
+        "users": User.query.count(),
+    }
+    return render_template("main/dashboard.html", latest_videos=latest_videos, stats=stats)
 
 
 @main_bp.route("/browse")
