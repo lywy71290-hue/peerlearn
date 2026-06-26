@@ -145,9 +145,56 @@ def profile():
     return render_template("auth/profile.html", videos=videos)
 
 
-# ─── Register (disabled — admin only via import) ──────────────────────────────
-@auth_bp.route("/register")
+# ─── Register (self-registration for trainees) ───────────────────────────────
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
-    return render_template("auth/register_closed.html")
+
+    if request.method == "POST":
+        username    = request.form.get("username", "").strip()
+        email       = request.form.get("email", "").strip().lower()
+        national_id = request.form.get("national_id", "").strip()
+        program     = request.form.get("program", "academic").strip()
+        level       = request.form.get("level", "Beginner").strip()
+
+        # Validate required fields
+        if not username or not email or not national_id:
+            flash("Please fill in all required fields.", "danger")
+            return render_template("auth/register.html")
+
+        # Validate email domain
+        if not email.endswith("@niti.edu.sa"):
+            flash("Only @niti.edu.sa institutional emails are allowed.", "danger")
+            return render_template("auth/register.html")
+
+        # Validate national ID
+        if not national_id.isdigit() or len(national_id) != 10:
+            flash("National ID must be exactly 10 digits.", "danger")
+            return render_template("auth/register.html")
+
+        # Check duplicates
+        if User.query.filter_by(email=email).first():
+            flash("An account with this email already exists.", "danger")
+            return render_template("auth/register.html")
+
+        if User.query.filter_by(national_id=national_id).first():
+            flash("An account with this national ID already exists.", "danger")
+            return render_template("auth/register.html")
+
+        # Create user — password = Niti + national_id
+        user = User(
+            username=username,
+            email=email,
+            national_id=national_id,
+            program=program,
+            level=level,
+        )
+        user.set_password("Niti" + national_id)
+        db.session.add(user)
+        db.session.commit()
+
+        flash("Account created successfully! You can now sign in.", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("auth/register.html")
