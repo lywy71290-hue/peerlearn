@@ -1,52 +1,53 @@
 """
 Email notification utility for NITI Learn.
-Uses Python's smtplib with Gmail SMTP (or any SMTP server).
+Uses Brevo (formerly Sendinblue) Transactional Email API.
 
 Required environment variables:
-  MAIL_SERVER   — e.g. smtp.gmail.com
-  MAIL_PORT     — e.g. 587
-  MAIL_USERNAME — sender email address
-  MAIL_PASSWORD — app password (not the account password)
-  ADMIN_EMAIL   — recipient email for new video notifications
+  BREVO_API_KEY   — Brevo API key (starts with xkeysib-)
+  BREVO_SENDER_EMAIL — sender email address (verified in Brevo)
+  BREVO_SENDER_NAME  — sender display name (default: NITI Learn)
+  ADMIN_EMAIL     — recipient email for new video notifications
 """
 import os
-import smtplib
 import logging
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import requests
 
 logger = logging.getLogger(__name__)
 
-
-def _get_smtp_config():
-    return {
-        "server":   os.environ.get("MAIL_SERVER", "smtp.gmail.com"),
-        "port":     int(os.environ.get("MAIL_PORT", 587)),
-        "username": os.environ.get("MAIL_USERNAME", ""),
-        "password": os.environ.get("MAIL_PASSWORD", ""),
-    }
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
 
 
 def send_email(to: str, subject: str, html_body: str):
-    """Send a single HTML email. Returns True on success, False on failure."""
-    cfg = _get_smtp_config()
-    if not cfg["username"] or not cfg["password"]:
-        logger.warning("Email not configured — skipping send.")
-        return False
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"]    = f"NITI Learn <{cfg['username']}>"
-        msg["To"]      = to
-        msg.attach(MIMEText(html_body, "html", "utf-8"))
+    """Send a single HTML email via Brevo API. Returns True on success, False on failure."""
+    api_key = os.environ.get("BREVO_API_KEY", "")
+    sender_email = os.environ.get("BREVO_SENDER_EMAIL", "")
+    sender_name = os.environ.get("BREVO_SENDER_NAME", "NITI Learn")
 
-        with smtplib.SMTP(cfg["server"], cfg["port"], timeout=10) as smtp:
-            smtp.ehlo()
-            smtp.starttls()
-            smtp.login(cfg["username"], cfg["password"])
-            smtp.sendmail(cfg["username"], to, msg.as_string())
-        logger.info(f"Email sent to {to}: {subject}")
-        return True
+    if not api_key or not sender_email:
+        logger.warning("Brevo email not configured — skipping send.")
+        return False
+
+    payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": to}],
+        "subject": subject,
+        "htmlContent": html_body
+    }
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": api_key
+    }
+
+    try:
+        response = requests.post(BREVO_API_URL, json=payload, headers=headers, timeout=15)
+        if response.status_code in (200, 201):
+            logger.info(f"Email sent via Brevo to {to}: {subject}")
+            return True
+        else:
+            logger.error(f"Brevo API error {response.status_code}: {response.text}")
+            return False
     except Exception as e:
         logger.error(f"Failed to send email to {to}: {e}")
         return False
