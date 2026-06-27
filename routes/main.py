@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from models.video import Video
 from models.user import User
@@ -12,7 +12,9 @@ UNITS = [f"Unit {i}" for i in range(1, 13)]
 
 @main_bp.route("/")
 def index():
-    return render_template("main/index.html", terms=TERMS, levels=LEVELS, units=UNITS)
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+    return redirect(url_for("auth.register"))
 
 
 @main_bp.route("/dashboard")

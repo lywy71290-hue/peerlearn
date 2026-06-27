@@ -8,9 +8,15 @@ from utils.email_notif import send_otp_email, send_register_otp_email
 import logging
 import random
 import string
+import re
 
 logger = logging.getLogger(__name__)
 auth_bp = Blueprint("auth", __name__)
+
+
+def normalize_otp(code: str) -> str:
+    """Remove spaces, dashes, and keep digits only."""
+    return re.sub(r'\D', '', code.strip())
 
 
 # ─── Step 1: Email + Password (Login) ────────────────────────────────────────
@@ -24,12 +30,12 @@ def login():
         password = request.form.get("password", "").strip()
 
         if not email or not password:
-            flash("Please enter your email and password.", "danger")
+            flash("يرجى إدخال البريد الإلكتروني وكلمة المرور.", "danger")
             return render_template("auth/login.html")
 
         user = User.query.filter_by(email=email).first()
         if not user or not user.check_password(password):
-            flash("Incorrect email or password. Please try again.", "danger")
+            flash("البريد الإلكتروني أو كلمة المرور غير صحيحة.", "danger")
             return render_template("auth/login.html")
 
         # ✅ Credentials correct — generate OTP and send to email
@@ -39,14 +45,13 @@ def login():
 
         email_sent = send_otp_email(user.email, user.username, otp.code)
 
-        # Store user_id in session for the verify step
         session["pending_user_id"] = user.id
         session["next_page"] = request.args.get("next", "")
 
         if email_sent:
-            flash(f"A 6-digit code has been sent to {user.email}. Enter it below.", "info")
+            flash(f"أُرسل رمز التحقق إلى {user.email}. أدخله أدناه.", "info")
         else:
-            flash(f"[DEV] Email not configured. Your code is: {otp.code}", "warning")
+            flash(f"[DEV] الرمز هو: {otp.code}", "warning")
 
         return redirect(url_for("auth.verify_otp"))
 
@@ -61,31 +66,31 @@ def verify_otp():
 
     user_id = session.get("pending_user_id")
     if not user_id:
-        flash("Session expired. Please sign in again.", "danger")
+        flash("انتهت الجلسة. يرجى تسجيل الدخول مجدداً.", "danger")
         return redirect(url_for("auth.login"))
 
     user = User.query.get(user_id)
     if not user:
         session.pop("pending_user_id", None)
-        flash("User not found. Please sign in again.", "danger")
+        flash("المستخدم غير موجود.", "danger")
         return redirect(url_for("auth.login"))
 
     if request.method == "POST":
-        entered_code = request.form.get("otp_code", "").strip()
+        entered_code = normalize_otp(request.form.get("otp_code", ""))
 
         otp = OTPCode.query.filter_by(user_id=user_id, used=False)\
                            .order_by(OTPCode.created_at.desc()).first()
 
         if not otp or not otp.is_valid():
-            flash("Your code has expired. Please sign in again to get a new code.", "danger")
+            flash("انتهت صلاحية الرمز. يرجى تسجيل الدخول مجدداً.", "danger")
             session.pop("pending_user_id", None)
             return redirect(url_for("auth.login"))
 
-        if otp.code != entered_code:
-            flash("Incorrect code. Please try again.", "danger")
+        if normalize_otp(otp.code) != entered_code:
+            flash("الرمز غير صحيح. يرجى المحاولة مرة أخرى.", "danger")
             return render_template("auth/verify_otp.html", email=user.email)
 
-        # ✅ OTP correct — mark as used and log in (remember for 1 year)
+        # ✅ OTP correct
         otp.used = True
         db.session.commit()
 
@@ -93,7 +98,7 @@ def verify_otp():
         next_page = session.pop("next_page", "") or url_for("main.dashboard")
 
         login_user(user, remember=True, duration=timedelta(hours=1))
-        flash(f"Welcome back, {user.username}!", "success")
+        flash(f"مرحباً {user.username}!", "success")
         return redirect(next_page)
 
     return render_template("auth/verify_otp.html", email=user.email)
@@ -120,9 +125,9 @@ def resend_otp():
     email_sent = send_otp_email(user.email, user.username, otp.code)
 
     if email_sent:
-        flash(f"A new code has been sent to {user.email}.", "info")
+        flash(f"تم إرسال رمز جديد إلى {user.email}.", "info")
     else:
-        flash(f"[DEV] Your new code is: {otp.code}", "warning")
+        flash(f"[DEV] الرمز الجديد هو: {otp.code}", "warning")
 
     return redirect(url_for("auth.verify_otp"))
 
@@ -132,8 +137,8 @@ def resend_otp():
 @login_required
 def logout():
     logout_user()
-    flash("You have been signed out.", "info")
-    return redirect(url_for("main.index"))
+    flash("تم تسجيل خروجك بنجاح.", "info")
+    return redirect(url_for("auth.register"))
 
 
 # ─── Profile ──────────────────────────────────────────────────────────────────
@@ -144,20 +149,19 @@ def profile():
     return render_template("auth/profile.html", videos=videos)
 
 
-# ─── Register: Step 1 — Enter name, email, password ──────────────────────────
+# ─── Register: Step 1 — Enter name, email, national ID ───────────────────────
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
 
     if request.method == "POST":
-        username         = request.form.get("username", "").strip()
-        email            = request.form.get("email", "").strip().lower()
-        password         = request.form.get("password", "").strip()
-        confirm_password = request.form.get("confirm_password", "").strip()
+        username    = request.form.get("username", "").strip()
+        email       = request.form.get("email", "").strip().lower()
+        national_id = request.form.get("national_id", "").strip()
 
         # Validate fields
-        if not username or not email or not password:
+        if not username or not email or not national_id:
             flash("يرجى تعبئة جميع الحقول المطلوبة.", "danger")
             return render_template("auth/register.html")
 
@@ -165,18 +169,17 @@ def register():
             flash("يُسمح فقط بالبريد المؤسسي @niti.edu.sa", "danger")
             return render_template("auth/register.html")
 
-        if len(password) < 6:
-            flash("كلمة المرور يجب أن تكون 6 أحرف على الأقل.", "danger")
-            return render_template("auth/register.html")
-
-        if password != confirm_password:
-            flash("كلمتا المرور غير متطابقتين.", "danger")
+        if not re.match(r'^\d{4,10}$', national_id):
+            flash("رقم الهوية يجب أن يكون أرقاماً فقط (4-10 أرقام).", "danger")
             return render_template("auth/register.html")
 
         # Check duplicate email
         if User.query.filter_by(email=email).first():
             flash("يوجد حساب بهذا البريد الإلكتروني بالفعل.", "danger")
             return render_template("auth/register.html")
+
+        # Password = Niti + national_id
+        password = f"Niti{national_id}"
 
         # Generate OTP code (6 digits)
         otp_code = ''.join(random.choices(string.digits, k=6))
@@ -186,6 +189,7 @@ def register():
             "username": username,
             "email": email,
             "password": password,
+            "national_id": national_id,
             "otp_code": otp_code,
         }
 
@@ -216,14 +220,14 @@ def verify_register_otp():
     email = pending.get("email", "")
 
     if request.method == "POST":
-        entered_code = request.form.get("otp_code", "").strip()
+        entered_code = normalize_otp(request.form.get("otp_code", ""))
+        stored_code  = normalize_otp(pending.get("otp_code", ""))
 
-        if entered_code != pending.get("otp_code"):
+        if entered_code != stored_code:
             flash("الرمز غير صحيح. يرجى المحاولة مرة أخرى.", "danger")
             return render_template("auth/verify_register_otp.html", email=email)
 
         # ✅ OTP correct — create the user account
-        # Re-check email not taken (race condition guard)
         if User.query.filter_by(email=email).first():
             session.pop("pending_register", None)
             flash("يوجد حساب بهذا البريد الإلكتروني بالفعل.", "danger")
@@ -232,6 +236,7 @@ def verify_register_otp():
         user = User(
             username=pending["username"],
             email=pending["email"],
+            national_id=pending.get("national_id"),
         )
         user.set_password(pending["password"])
         db.session.add(user)
@@ -239,7 +244,6 @@ def verify_register_otp():
 
         session.pop("pending_register", None)
 
-        # Log in immediately with 1-year session
         login_user(user, remember=True, duration=timedelta(hours=1))
         flash(f"مرحباً {user.username}! تم إنشاء حسابك بنجاح.", "success")
         return redirect(url_for("main.dashboard"))
@@ -254,7 +258,6 @@ def resend_register_otp():
     if not pending:
         return redirect(url_for("auth.register"))
 
-    # Generate new OTP
     otp_code = ''.join(random.choices(string.digits, k=6))
     pending["otp_code"] = otp_code
     session["pending_register"] = pending
