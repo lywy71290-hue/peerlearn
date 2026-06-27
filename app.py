@@ -1,5 +1,6 @@
 import os
 import logging
+from datetime import timedelta
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -16,6 +17,10 @@ def create_app():
 
     # ─── Configuration ────────────────────────────────────────────────────────
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-prod")
+
+    # Session lasts 1 year
+    app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=365)
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
 
     database_url = os.environ.get("DATABASE_URL", "")
     if not database_url:
