@@ -92,7 +92,7 @@ def verify_otp():
         session.pop("pending_user_id", None)
         next_page = session.pop("next_page", "") or url_for("main.dashboard")
 
-        login_user(user, remember=True, duration=timedelta(days=365))
+        login_user(user, remember=True, duration=timedelta(hours=1))
         flash(f"Welcome back, {user.username}!", "success")
         return redirect(next_page)
 
@@ -240,7 +240,7 @@ def verify_register_otp():
         session.pop("pending_register", None)
 
         # Log in immediately with 1-year session
-        login_user(user, remember=True, duration=timedelta(days=365))
+        login_user(user, remember=True, duration=timedelta(hours=1))
         flash(f"مرحباً {user.username}! تم إنشاء حسابك بنجاح.", "success")
         return redirect(url_for("main.dashboard"))
 

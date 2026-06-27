@@ -18,9 +18,9 @@ def create_app():
     # ─── Configuration ────────────────────────────────────────────────────────
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-prod")
 
-    # Session lasts 1 year
-    app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=365)
-    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
+    # Session lasts 1 hour
+    app.config["REMEMBER_COOKIE_DURATION"] = timedelta(hours=1)
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=1)
 
     database_url = os.environ.get("DATABASE_URL", "")
     if not database_url:
