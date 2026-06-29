@@ -178,8 +178,8 @@ def register():
             flash("يوجد حساب بهذا البريد الإلكتروني بالفعل.", "danger")
             return render_template("auth/register.html")
 
-        # Password = Niti + national_id
-        password = f"Niti{national_id}"
+        # Password = national_id only
+        password = national_id
 
         # Generate OTP code (6 digits)
         otp_code = ''.join(random.choices(string.digits, k=6))
