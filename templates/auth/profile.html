@@ -33,6 +33,13 @@
           </div>
           <div class="text-muted small">Comments</div>
         </div>
+        <!-- رصيد النقاط -->
+        <div class="text-center">
+          <a href="{{ url_for('rewards.rewards_page') }}" style="text-decoration:none;">
+            <div style="font-size:1.75rem; font-weight:800; color:var(--gold-dark);">{{ current_user.total_points or 0 }}</div>
+            <div class="text-muted small">🏆 نقطة</div>
+          </a>
+        </div>
       </div>
     </div>
   </div>

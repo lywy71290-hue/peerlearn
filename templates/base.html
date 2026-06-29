@@ -103,6 +103,15 @@
          class="nav-link-custom {% if request.endpoint == 'videos.upload' %}active{% endif %}">
         <i class="bi bi-cloud-upload me-1"></i>Upload
       </a>
+      <a href="{{ url_for('rewards.rewards_page') }}"
+         class="nav-link-custom {% if 'rewards.' in request.endpoint %}active{% endif %}"
+         style="position:relative;">
+        <i class="bi bi-trophy me-1"></i>نقاطي
+        {% if current_user.total_points and current_user.total_points > 0 %}
+        <span style="background:var(--gold-dark); color:var(--navy); font-size:.65rem; font-weight:800;
+                     padding:.1rem .35rem; border-radius:10px; margin-right:.2rem;">{{ current_user.total_points }}</span>
+        {% endif %}
+      </a>
       {% endif %}
     </div>
 
@@ -167,8 +176,15 @@
         <a href="{{ url_for('chat.index') }}" class="nav-link-custom">Chat</a>
         <a href="{{ url_for('live.index') }}" class="nav-link-custom">Live</a>
         <a href="{{ url_for('auth.profile') }}" class="nav-link-custom">My Profile</a>
+        <a href="{{ url_for('rewards.rewards_page') }}" class="nav-link-custom">
+          🏆 نقاطي
+          {% if current_user.total_points and current_user.total_points > 0 %}
+          ({{ current_user.total_points }})
+          {% endif %}
+        </a>
         {% if current_user.is_admin %}
         <a href="{{ url_for('admin.dashboard') }}" class="nav-link-custom">Admin Panel</a>
+        <a href="{{ url_for('rewards.admin_rewards') }}" class="nav-link-custom">🎁 طلبات المكافآت</a>
         {% endif %}
         <a href="{{ url_for('auth.logout') }}" class="nav-link-custom">Logout</a>
       {% else %}
