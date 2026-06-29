@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}نقاطي ومكافآتي — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:900px;">
+
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h2 style="font-weight:900; color:var(--navy);">🏆 نقاطي ومكافآتي</h2>
+    <p style="color:var(--text-muted);">ارفع فيديوهات تعليمية واكسب نقاطاً تستبدلها بمكافآت حقيقية</p>
+  </div>
+
+  <!-- رصيد النقاط -->
+  <div style="background:linear-gradient(135deg,var(--navy),#1a3a5c); border-radius:20px;
+              padding:2.5rem; text-align:center; margin-bottom:2rem; color:#fff;">
+    <div style="font-size:4rem; font-weight:900; color:var(--gold-dark); line-height:1;">
+      {{ current_user.total_points or 0 }}
+    </div>
+    <div style="font-size:1.1rem; opacity:.8; margin-top:.5rem;">نقطة في رصيدك</div>
+    <div style="margin-top:1.5rem; display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
+      <div style="background:rgba(255,255,255,.1); border-radius:12px; padding:.75rem 1.5rem;">
+        <div style="font-size:1.5rem; font-weight:800; color:var(--gold-dark);">10</div>
+        <div style="font-size:.8rem; opacity:.7;">نقطة لكل فيديو مقبول</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1); border-radius:12px; padding:.75rem 1.5rem;">
+        <div style="font-size:1.5rem; font-weight:800; color:var(--gold-dark);">15</div>
+        <div style="font-size:.8rem; opacity:.7;">نقطة = كوب قهوة ☕</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1); border-radius:12px; padding:.75rem 1.5rem;">
+        <div style="font-size:1.5rem; font-weight:800; color:var(--gold-dark);">30</div>
+        <div style="font-size:.8rem; opacity:.7;">نقطة = وجبة غداء 🍽️</div>
+      </div>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-dismissible fade show rounded-3 mb-3">
+        {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- استبدال النقاط -->
+  <div style="background:#fff; border-radius:16px; padding:2rem; border:1px solid var(--border); margin-bottom:2rem;">
+    <h5 style="font-weight:800; color:var(--navy); margin-bottom:1.5rem;">🎁 استبدل نقاطك</h5>
+    <form method="POST" action="{{ url_for('rewards.redeem') }}">
+      <div class="row g-3">
+        <!-- نوع المكافأة -->
+        <div class="col-md-5">
+          <label style="font-weight:600; font-size:.88rem; color:var(--navy); margin-bottom:.4rem; display:block;">
+            نوع المكافأة
+          </label>
+          {% for key, r in rewards.items() %}
+          <label style="display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem;
+                         border:2px solid #e5e7eb; border-radius:10px; cursor:pointer; margin-bottom:.5rem;
+                         transition:border-color .15s;"
+                 onmouseover="this.style.borderColor='var(--gold-dark)'"
+                 onmouseout="this.style.borderColor='#e5e7eb'">
+            <input type="radio" name="reward_type" value="{{ key }}" required
+                   style="accent-color:var(--gold-dark); width:18px; height:18px;">
+            <span>
+              <strong style="color:var(--navy);">{{ r.name }}</strong>
+              <span style="color:var(--text-muted); font-size:.82rem; margin-right:.5rem;">— {{ r.points }} نقطة</span>
+            </span>
+          </label>
+          {% endfor %}
+        </div>
+
+        <!-- الموقع -->
+        <div class="col-md-4">
+          <label style="font-weight:600; font-size:.88rem; color:var(--navy); margin-bottom:.4rem; display:block;">
+            الموقع
+          </label>
+          <select name="location" required
+                  style="width:100%; padding:.7rem 1rem; border:2px solid #e5e7eb; border-radius:10px;
+                         font-size:.95rem; color:var(--navy); background:#fff; font-family:inherit;">
+            <option value="">اختر الموقع...</option>
+            {% for loc in locations %}
+            <option value="{{ loc }}">{{ loc }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- زر الإرسال -->
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="submit"
+                  style="width:100%; padding:.75rem; background:var(--gold-dark); color:var(--navy);
+                         border:none; border-radius:10px; font-weight:800; font-size:.95rem;
+                         cursor:pointer; font-family:inherit;">
+            استبدال النقاط
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- طلباتي السابقة -->
+  {% if my_requests %}
+  <div style="background:#fff; border-radius:16px; padding:2rem; border:1px solid var(--border); margin-bottom:2rem;">
+    <h5 style="font-weight:800; color:var(--navy); margin-bottom:1.5rem;">📋 طلباتي السابقة</h5>
+    <div class="table-responsive">
+      <table class="table" style="font-size:.88rem;">
+        <thead style="background:#f8f9fa;">
+          <tr>
+            <th>المكافأة</th>
+            <th>الموقع</th>
+            <th>النقاط</th>
+            <th>الحالة</th>
+            <th>الكوبون</th>
+            <th>التاريخ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in my_requests %}
+          <tr>
+            <td>{{ 'كوب قهوة ☕' if r.reward_type == 'coffee' else 'وجبة غداء 🍽️' }}</td>
+            <td>{{ r.location }}</td>
+            <td>{{ r.points_cost }}</td>
+            <td>
+              {% if r.status == 'pending' %}
+                <span style="background:#fef3c7; color:#92400e; padding:.2rem .6rem; border-radius:6px; font-size:.8rem;">⏳ قيد المراجعة</span>
+              {% elif r.status == 'approved' %}
+                <span style="background:#d1fae5; color:#065f46; padding:.2rem .6rem; border-radius:6px; font-size:.8rem;">✅ مقبول</span>
+              {% else %}
+                <span style="background:#fee2e2; color:#991b1b; padding:.2rem .6rem; border-radius:6px; font-size:.8rem;">❌ مرفوض</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if r.coupon_code %}
+                <code style="background:#f0fdf4; color:#166534; padding:.2rem .5rem; border-radius:5px; font-weight:700;">{{ r.coupon_code }}</code>
+              {% else %}—{% endif %}
+            </td>
+            <td style="color:var(--text-muted);">{{ r.created_at.strftime('%Y/%m/%d') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- سجل النقاط -->
+  {% if transactions %}
+  <div style="background:#fff; border-radius:16px; padding:2rem; border:1px solid var(--border);">
+    <h5 style="font-weight:800; color:var(--navy); margin-bottom:1.5rem;">📊 سجل النقاط</h5>
+    <div class="table-responsive">
+      <table class="table" style="font-size:.88rem;">
+        <thead style="background:#f8f9fa;">
+          <tr><th>السبب</th><th>النقاط</th><th>التاريخ</th></tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
+          <tr>
+            <td>{{ tx.reason }}</td>
+            <td style="font-weight:700; color:{{ '#059669' if tx.points > 0 else '#dc2626' }};">
+              {{ '+' if tx.points > 0 else '' }}{{ tx.points }}
+            </td>
+            <td style="color:var(--text-muted);">{{ tx.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

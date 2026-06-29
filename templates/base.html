@@ -376,6 +376,88 @@
       if (banner) banner.style.display = 'none';
     });
   }
+
+  // ── نافذة التقييم بعد 5 دقائق ──────────────────────────────────────────────
+  (function(){
+    {% if current_user.is_authenticated %}
+    const RATING_KEY = 'niti_rated_session';
+    if (!sessionStorage.getItem(RATING_KEY)) {
+      setTimeout(function(){
+        const modal = document.getElementById('platformRatingModal');
+        if (modal) modal.style.display = 'flex';
+      }, 5 * 60 * 1000); // 5 دقائق
+    }
+    {% endif %}
+  })();
+
+  function submitPlatformRating(stars) {
+    const comment = document.getElementById('ratingComment') ? document.getElementById('ratingComment').value : '';
+    fetch('/api/rate-platform', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({rating: stars, comment: comment})
+    }).then(() => {
+      sessionStorage.setItem('niti_rated_session', '1');
+      const modal = document.getElementById('platformRatingModal');
+      if (modal) modal.style.display = 'none';
+    }).catch(() => {
+      const modal = document.getElementById('platformRatingModal');
+      if (modal) modal.style.display = 'none';
+    });
+  }
+
+  function closePlatformRating() {
+    sessionStorage.setItem('niti_rated_session', '1');
+    const modal = document.getElementById('platformRatingModal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  // تلوين النجوم عند التمرير
+  function hoverStar(n) {
+    document.querySelectorAll('.rating-star').forEach((s, i) => {
+      s.style.color = i < n ? '#f59e0b' : '#d1d5db';
+    });
+  }
+  function resetStars() {
+    document.querySelectorAll('.rating-star').forEach(s => s.style.color = '#d1d5db');
+  }
 </script>
+
+{% if current_user.is_authenticated %}
+<!-- ── نافذة تقييم المنصة ──────────────────────────────────────────────────── -->
+<div id="platformRatingModal"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:99999;
+            align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:#fff; border-radius:20px; padding:2rem; max-width:420px; width:100%;
+              text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.4); position:relative;">
+    <button onclick="closePlatformRating()"
+            style="position:absolute; top:1rem; left:1rem; background:none; border:none;
+                   font-size:1.3rem; cursor:pointer; color:#9ca3af;">✕</button>
+    <div style="font-size:2.5rem; margin-bottom:.5rem;">⭐</div>
+    <h4 style="font-weight:900; color:#0a1628; margin-bottom:.5rem;">كيف تجد المنصة؟</h4>
+    <p style="color:#6b7280; font-size:.9rem; margin-bottom:1.5rem;">
+      رأيك يساعدنا على تحسين تجربتك
+    </p>
+    <div style="display:flex; justify-content:center; gap:.5rem; margin-bottom:1.5rem;">
+      {% for i in range(1, 6) %}
+      <span class="rating-star" data-val="{{ i }}"
+            onclick="submitPlatformRating({{ i }})"
+            onmouseover="hoverStar({{ i }})"
+            onmouseout="resetStars()"
+            style="font-size:2.5rem; cursor:pointer; color:#d1d5db; transition:color .1s;">★</span>
+      {% endfor %}
+    </div>
+    <textarea id="ratingComment" placeholder="تعليق اختياري..." rows="2"
+              style="width:100%; padding:.6rem; border:1px solid #e5e7eb; border-radius:8px;
+                     font-family:inherit; font-size:.88rem; resize:none; margin-bottom:1rem;
+                     box-sizing:border-box;"></textarea>
+    <button onclick="closePlatformRating()"
+            style="background:#f3f4f6; color:#374151; border:none; border-radius:8px;
+                   padding:.6rem 1.5rem; font-size:.88rem; cursor:pointer; font-family:inherit;">
+      لاحقاً
+    </button>
+  </div>
+</div>
+{% endif %}
 </body>
 </html>

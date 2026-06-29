@@ -84,10 +84,26 @@ def approve_video(video_id):
     # Notify the uploader
     notif = Notification(
         user_id=video.user_id,
-        message=f"✅ تمت الموافقة على فيديوك «{video.title}» ونُشر للجميع.",
+        message=f"✅ تمت الموافقة على فيديوك «{video.title}» ونُشر للجميع. حصلت على 10 نقاط! 🎉",
         link=f"/videos/{video.id}",
     )
     db.session.add(notif)
+
+    # ── منح النقاط للرافع ──────────────────────────────────────────────────
+    try:
+        from models.rewards import PointTransaction
+        uploader = video.author
+        uploader.total_points = (uploader.total_points or 0) + 10
+        tx = PointTransaction(
+            user_id=uploader.id,
+            points=10,
+            reason=f"فيديو مقبول: {video.title}",
+            video_id=video.id,
+        )
+        db.session.add(tx)
+    except Exception as e:
+        import logging; logging.getLogger(__name__).warning(f"Points grant failed: {e}")
+
     db.session.commit()
     # Send email to uploader
     try:

@@ -51,6 +51,7 @@ def create_app():
     from routes.posts         import posts_bp
     from routes.chat          import chat_bp
     from routes.live          import live_bp
+    from routes.rewards        import rewards_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(videos_bp)
@@ -60,6 +61,7 @@ def create_app():
     app.register_blueprint(posts_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(live_bp)
+    app.register_blueprint(rewards_bp)
 
     # ─── Error Handlers ───────────────────────────────────────────────────────
     @app.errorhandler(403)
@@ -80,6 +82,7 @@ def create_app():
         from models.post         import Post, PostComment, PostLike
         from models.chat         import ChatMessage
         from models.otp          import OTPCode
+        from models.rewards      import PointTransaction, RewardRequest, PlatformRating
         try:
             db.create_all()
             app.logger.info("✅ Database tables created/verified successfully.")

@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     level = db.Column(db.String(30), default="")     # e.g. 'Intermediate'
     national_id = db.Column(db.String(10), unique=True, nullable=True)  # 10-digit Saudi National ID
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    total_points = db.Column(db.Integer, default=0, nullable=False)  # رصيد النقاط الحالي
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     videos = db.relationship("Video", backref="author", lazy=True, cascade="all, delete-orphan")

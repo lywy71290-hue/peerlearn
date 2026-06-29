@@ -202,3 +202,35 @@ def send_register_otp_email(to_email: str, username: str, otp_code: str):
     </div>
     """
     return send_email(to_email, subject, html)
+
+
+def send_reward_coupon_email(to_email: str, username: str, reward_name: str,
+                              location: str, coupon_code: str):
+    """Send reward coupon to trainee after admin approval."""
+    subject = f"[NITI Learn] 🎉 كوبون مكافأتك: {coupon_code}"
+    html = f"""
+    <div dir="rtl" style="font-family:'Segoe UI',Arial,sans-serif; max-width:520px; margin:0 auto; background:#f4f6fb; padding:24px; border-radius:12px;">
+      <div style="background:#0a1628; padding:20px 24px; border-radius:10px 10px 0 0; text-align:center;">
+        <h2 style="color:#c9a84c; margin:0; font-size:1.5rem;">NITI Learn</h2>
+        <p style="color:rgba(255,255,255,.6); margin:4px 0 0; font-size:.85rem;">نظام المكافآت</p>
+      </div>
+      <div style="background:#fff; padding:32px 24px; border-radius:0 0 10px 10px; border:1px solid #e5e7eb; border-top:none; text-align:center;">
+        <h3 style="color:#059669; margin-top:0;">🎉 تمت الموافقة على مكافأتك!</h3>
+        <p style="color:#374151;">مرحباً <strong>{username}</strong>،</p>
+        <p style="color:#374151;">يسعدنا منحك <strong>{reward_name}</strong> من <strong>{location}</strong> مكافأةً على مساهمتك في المنصة.</p>
+        <div style="background:#f0fdf4; border:2px dashed #059669; border-radius:12px; padding:20px; margin:24px 0;">
+          <p style="color:#065f46; font-size:.9rem; margin:0 0 8px;">كود الكوبون</p>
+          <span style="font-size:2rem; font-weight:900; letter-spacing:6px; color:#0a1628; font-family:monospace;">{coupon_code}</span>
+        </div>
+        <p style="color:#374151; font-size:.9rem;">
+          أرِ هذا الكود في <strong>{location}</strong> لاستلام مكافأتك.<br>
+          الكوبون للاستخدام مرة واحدة فقط.
+        </p>
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0;">
+        <p style="color:#9ca3af; font-size:.78rem; margin:0;">
+          شكراً على مساهمتك في NITI Learn! استمر في رفع المحتوى التعليمي لكسب المزيد من النقاط.
+        </p>
+      </div>
+    </div>
+    """
+    return send_email(to_email, subject, html)

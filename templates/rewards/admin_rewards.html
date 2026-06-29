@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}إدارة المكافآت — NITI Learn{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:1000px;">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h3 style="font-weight:900; color:var(--navy); margin:0;">🎁 إدارة طلبات المكافآت</h3>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+      ← لوحة الأدمن
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-dismissible fade show rounded-3 mb-3">
+        {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- طلبات قيد الانتظار -->
+  <div style="background:#fff; border-radius:16px; padding:2rem; border:2px solid #fde68a; margin-bottom:2rem;">
+    <h5 style="font-weight:800; color:var(--navy); margin-bottom:1.5rem;">
+      ⏳ طلبات قيد الانتظار
+      {% if pending %}
+        <span style="background:#fef3c7; color:#92400e; padding:.2rem .6rem; border-radius:8px; font-size:.85rem; margin-right:.5rem;">
+          {{ pending|length }}
+        </span>
+      {% endif %}
+    </h5>
+
+    {% if pending %}
+    <div class="table-responsive">
+      <table class="table align-middle" style="font-size:.9rem;">
+        <thead style="background:#fffbeb;">
+          <tr>
+            <th>المتدرب</th>
+            <th>المكافأة</th>
+            <th>الموقع</th>
+            <th>النقاط</th>
+            <th>التاريخ</th>
+            <th>الإجراء</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in pending %}
+          <tr>
+            <td>
+              <strong>{{ r.user.username }}</strong><br>
+              <small style="color:var(--text-muted);">{{ r.user.email }}</small>
+            </td>
+            <td>{{ 'كوب قهوة ☕' if r.reward_type == 'coffee' else 'وجبة غداء 🍽️' }}</td>
+            <td>{{ r.location }}</td>
+            <td><strong style="color:var(--navy);">{{ r.points_cost }}</strong></td>
+            <td style="color:var(--text-muted); font-size:.82rem;">{{ r.created_at.strftime('%Y/%m/%d %H:%M') }}</td>
+            <td>
+              <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <!-- موافقة -->
+                <form method="POST" action="{{ url_for('rewards.approve_reward', req_id=r.id) }}" style="display:inline;">
+                  <button type="submit"
+                          style="background:#059669; color:#fff; border:none; border-radius:8px;
+                                 padding:.4rem .9rem; font-size:.82rem; cursor:pointer; font-weight:700;">
+                    ✅ موافقة
+                  </button>
+                </form>
+                <!-- رفض -->
+                <button type="button"
+                        onclick="document.getElementById('reject-form-{{ r.id }}').style.display='block'"
+                        style="background:#dc2626; color:#fff; border:none; border-radius:8px;
+                               padding:.4rem .9rem; font-size:.82rem; cursor:pointer; font-weight:700;">
+                  ❌ رفض
+                </button>
+              </div>
+              <!-- نموذج الرفض -->
+              <div id="reject-form-{{ r.id }}" style="display:none; margin-top:.5rem;">
+                <form method="POST" action="{{ url_for('rewards.reject_reward', req_id=r.id) }}">
+                  <input type="text" name="note" placeholder="سبب الرفض (اختياري)"
+                         style="width:100%; padding:.4rem .7rem; border:1px solid #e5e7eb; border-radius:6px;
+                                font-size:.82rem; margin-bottom:.4rem; font-family:inherit;">
+                  <button type="submit"
+                          style="background:#dc2626; color:#fff; border:none; border-radius:6px;
+                                 padding:.35rem .8rem; font-size:.8rem; cursor:pointer;">
+                    تأكيد الرفض
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p style="color:var(--text-muted); text-align:center; padding:2rem 0; margin:0;">
+        لا توجد طلبات قيد الانتظار حالياً ✨
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- الطلبات المقبولة الأخيرة -->
+  {% if approved %}
+  <div style="background:#fff; border-radius:16px; padding:2rem; border:1px solid #d1fae5; margin-bottom:2rem;">
+    <h5 style="font-weight:800; color:var(--navy); margin-bottom:1.5rem;">✅ آخر الطلبات المقبولة</h5>
+    <div class="table-responsive">
+      <table class="table" style="font-size:.88rem;">
+        <thead style="background:#f0fdf4;">
+          <tr><th>المتدرب</th><th>المكافأة</th><th>الموقع</th><th>الكوبون</th><th>التاريخ</th></tr>
+        </thead>
+        <tbody>
+          {% for r in approved %}
+          <tr>
+            <td>{{ r.user.username }}</td>
+            <td>{{ 'كوب قهوة ☕' if r.reward_type == 'coffee' else 'وجبة غداء 🍽️' }}</td>
+            <td>{{ r.location }}</td>
+            <td><code style="background:#f0fdf4; color:#166534; padding:.2rem .5rem; border-radius:5px; font-weight:700;">{{ r.coupon_code }}</code></td>
+            <td style="color:var(--text-muted); font-size:.82rem;">{{ r.updated_at.strftime('%Y/%m/%d') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
