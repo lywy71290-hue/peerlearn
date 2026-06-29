@@ -89,6 +89,24 @@ def create_app():
         except Exception as e:
             app.logger.error(f"❌ Database init error: {e}")
 
+        # ─── Safe column migrations (add missing columns without dropping data) ─
+        try:
+            from sqlalchemy import text, inspect
+            inspector = inspect(db.engine)
+            existing_tables = inspector.get_table_names()
+
+            # Add total_points to users if missing
+            if 'users' in existing_tables:
+                cols = [c['name'] for c in inspector.get_columns('users')]
+                if 'total_points' not in cols:
+                    db.session.execute(text('ALTER TABLE users ADD COLUMN total_points INTEGER DEFAULT 0 NOT NULL'))
+                    db.session.commit()
+                    app.logger.info("✅ Added total_points column to users table.")
+
+            app.logger.info("✅ Column migrations completed.")
+        except Exception as e:
+            app.logger.error(f"❌ Column migration error: {e}")
+
     return app
 
 
